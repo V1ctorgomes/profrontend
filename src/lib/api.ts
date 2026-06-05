@@ -50,13 +50,16 @@ export async function api<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
-    const message =
-      (error as { message?: string | string[] }).message ??
-      'Erro ao processar requisição';
-    throw new ApiError(
-      Array.isArray(message) ? message[0] : message,
-      response.status,
-    );
+    const raw = (error as { message?: string | string[] }).message;
+    const message = Array.isArray(raw)
+      ? raw[0]
+      : raw ??
+        (response.status === 502
+          ? 'Backend indisponível. Faça redeploy do backend no EasyPanel.'
+          : response.status === 401
+            ? 'Sessão expirada. Faça login novamente.'
+            : `Erro ao processar requisição (${response.status})`);
+    throw new ApiError(message, response.status);
   }
 
   if (response.status === 204) {
