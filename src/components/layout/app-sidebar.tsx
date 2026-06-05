@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LogOut, Menu, X } from 'lucide-react';
-import { ProgrifesLogo } from '@/components/brand/progrifes-logo';
+import { ProgrifesBrand } from '@/components/brand/progrifes-logo';
 import { getNavigationForRole } from '@/config/navigation';
 import { AUTH_COOKIE, USER_COOKIE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -59,7 +59,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
           <Menu className="h-6 w-6" />
         </button>
         <div className="flex min-w-0 max-w-[calc(100vw-7rem)] items-center justify-center">
-          <ProgrifesLogo size="sm" />
+          <ProgrifesBrand size="sm" />
         </div>
         <div className="w-10 shrink-0" aria-hidden />
       </div>
@@ -76,7 +76,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
             className="flex min-w-0 flex-1 items-center pr-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            <ProgrifesLogo size="md" />
+            <ProgrifesBrand size="md" />
           </Link>
           <button
             type="button"

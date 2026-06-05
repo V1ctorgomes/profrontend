@@ -1,4 +1,4 @@
-import { ProgrifesLogo } from '@/components/brand/progrifes-logo';
+import { ProgrifesBrand } from '@/components/brand/progrifes-logo';
 
 export function LoginBanner() {
   return (
@@ -27,7 +27,7 @@ export function LoginBanner() {
 
       <div className="relative z-10 flex max-w-2xl flex-col p-16">
         <div className="mb-8">
-          <ProgrifesLogo size="2xl" priority />
+          <ProgrifesBrand size="banner" showText={false} priority />
         </div>
 
         <h2 className="mb-6 text-4xl leading-tight font-bold text-white drop-shadow-sm">
