@@ -1,15 +1,28 @@
-function getApiUrl(): string {
+/**
+ * Base da API (igual ao CRM):
+ * - Se NEXT_PUBLIC_API_URL estiver definido, usa direto.
+ * - No browser sem a variável, usa /api/proxy (mesmo domínio → Next repassa ao backend).
+ * - No SSR, usa INTERNAL_API_URL ou BACKEND_INTERNAL_URL.
+ */
+export function getApiBaseUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '').trim();
-  if (fromEnv) return fromEnv.endsWith('/api') ? fromEnv : `${fromEnv}/api`;
-
-  if (typeof window !== 'undefined') {
-    return 'http://localhost:3001/api';
+  if (fromEnv) {
+    return fromEnv.endsWith('/api') ? fromEnv : `${fromEnv}/api`;
   }
 
-  const internal = process.env.INTERNAL_API_URL?.replace(/\/$/, '').trim();
-  if (internal) return internal.endsWith('/api') ? internal : `${internal}/api`;
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api/proxy`;
+  }
 
-  return 'http://localhost:3001/api';
+  const internal = (
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.INTERNAL_API_URL ||
+    'http://127.0.0.1:3001'
+  )
+    .replace(/\/$/, '')
+    .trim();
+
+  return internal.endsWith('/api') ? internal : `${internal}/api`;
 }
 
 export class ApiError extends Error {
@@ -32,7 +45,7 @@ export async function api<T>(
 ): Promise<T> {
   const { token, headers, ...rest } = options;
 
-  const response = await fetch(`${getApiUrl()}${endpoint}`, {
+  const response = await fetch(`${getApiBaseUrl()}${endpoint}`, {
     ...rest,
     headers: {
       'Content-Type': 'application/json',
