@@ -1,15 +1,8 @@
 /**
- * Base da API (igual ao CRM):
- * - Se NEXT_PUBLIC_API_URL estiver definido, usa direto.
- * - No browser sem a variável, usa /api/proxy (mesmo domínio → Next repassa ao backend).
- * - No SSR, usa INTERNAL_API_URL ou BACKEND_INTERNAL_URL.
+ * Browser: sempre /api/proxy (mesmo domínio, evita CORS).
+ * SSR: INTERNAL_API_URL ou NEXT_PUBLIC_API_URL.
  */
 export function getApiBaseUrl(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '').trim();
-  if (fromEnv) {
-    return fromEnv.endsWith('/api') ? fromEnv : `${fromEnv}/api`;
-  }
-
   if (typeof window !== 'undefined') {
     return `${window.location.origin}/api/proxy`;
   }
@@ -17,6 +10,7 @@ export function getApiBaseUrl(): string {
   const internal = (
     process.env.BACKEND_INTERNAL_URL ||
     process.env.INTERNAL_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
     'http://127.0.0.1:3001'
   )
     .replace(/\/$/, '')
