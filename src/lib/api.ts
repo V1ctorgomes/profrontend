@@ -1,4 +1,16 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
+function getApiUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '').trim();
+  if (fromEnv) return fromEnv.endsWith('/api') ? fromEnv : `${fromEnv}/api`;
+
+  if (typeof window !== 'undefined') {
+    return 'http://localhost:3001/api';
+  }
+
+  const internal = process.env.INTERNAL_API_URL?.replace(/\/$/, '').trim();
+  if (internal) return internal.endsWith('/api') ? internal : `${internal}/api`;
+
+  return 'http://localhost:3001/api';
+}
 
 export class ApiError extends Error {
   constructor(
@@ -20,7 +32,7 @@ export async function api<T>(
 ): Promise<T> {
   const { token, headers, ...rest } = options;
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const response = await fetch(`${getApiUrl()}${endpoint}`, {
     ...rest,
     headers: {
       'Content-Type': 'application/json',

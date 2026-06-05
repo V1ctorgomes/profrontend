@@ -1,33 +1,33 @@
-# Deploy no EasyPanel — Frontend (profrontend)
+# Deploy EasyPanel — Frontend (igual ao CRM)
 
 Repositório: `V1ctorgomes/profrontend`
 
-## Configuração do serviço
+## Serviço no EasyPanel
 
 | Aba | Valor |
 |-----|-------|
-| **Source** | `V1ctorgomes/profrontend`, branch `main` |
-| **Build** | Dockerfile → `Dockerfile` (raiz) |
-| **Porta** | `3000` |
+| Source | `V1ctorgomes/profrontend` / `main` |
+| Build | Dockerfile → `Dockerfile` (raiz) |
+| Porta | `3000` |
+| Réplicas | `1` |
 
-## Variáveis de ambiente (aba Environment)
+## Environment (mesma aba do CRM)
 
-No EasyPanel, variáveis da aba **Environment** entram no build e no runtime:
+```env
+NODE_ENV=production
 
+NEXT_PUBLIC_API_URL=https://progrifes-progrifes_backend.SEU-HOST.easypanel.host/api
+INTERNAL_API_URL=https://progrifes-progrifes_backend.SEU-HOST.easypanel.host/api
 ```
-NEXT_PUBLIC_API_URL=https://sua-url-do-backend.com/api
-```
 
-> URL pública do backend com `/api` no final. Ao mudar, faça **redeploy**.
+> No CRM a URL não tem `/api`; no ERP precisa do sufixo `/api`.
 
 ## Backend — CORS
 
-No serviço do backend, configure:
-
-```
-FRONTEND_URL=https://sua-url-do-frontend.com
+```env
+FRONTEND_URL=https://progrifes-progrifes_frontend.SEU-HOST.easypanel.host
 ```
 
 ## Verificar
 
-Acesse a URL do frontend → tela de login deve aparecer.
+URL do frontend → tela de login

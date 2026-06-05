@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  /* igual ao CRM: build padrão, sem standalone */
 };
 
 export default nextConfig;
