@@ -47,8 +47,8 @@ export default async function DashboardPage() {
   }
 
   if (user.role === 'ADMIN') {
-    return <AdminDashboard metrics={metrics as AdminDashboardMetrics} user={user} />;
+    return <AdminDashboard metrics={metrics as AdminDashboardMetrics} />;
   }
 
-  return <UserDashboard metrics={metrics as UserDashboardMetrics} user={user} />;
+  return <UserDashboard metrics={metrics as UserDashboardMetrics} />;
 }
