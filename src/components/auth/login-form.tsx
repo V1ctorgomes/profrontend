@@ -6,9 +6,7 @@ import { Loader2, Lock, Mail } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { LoginResponse } from '@/types/auth';
 import { AUTH_COOKIE, USER_COOKIE } from '@/lib/constants';
-
-const inputClass =
-  'flex h-11 w-full rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm text-brand-ink transition-colors placeholder:text-brand-800/40 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50';
+import { btnPrimaryClass, inputClass } from '@/lib/styles';
 
 function setCookie(name: string, value: string, days = 1) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -97,7 +95,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-900 px-8 text-sm font-medium text-white transition-all hover:bg-brand-700 focus:ring-2 focus:ring-brand-900 focus:ring-offset-2 focus:ring-offset-brand-canvas focus:outline-none disabled:pointer-events-none disabled:opacity-70"
+        className={`${btnPrimaryClass} mt-2 h-11 w-full focus:ring-offset-brand-canvas`}
       >
         {loading ? (
           <>

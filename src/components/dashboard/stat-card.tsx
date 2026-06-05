@@ -1,5 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { statCardClass } from '@/lib/styles';
 
 interface StatCardProps {
   title: string;
@@ -17,12 +18,7 @@ export function StatCard({
   className,
 }: StatCardProps) {
   return (
-    <div
-      className={cn(
-        'group card-glow rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md',
-        className,
-      )}
-    >
+    <div className={cn(statCardClass, className)}>
       <div className="relative mb-3 flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500">{title}</p>
         <div className="rounded-lg bg-slate-100 p-2 transition-colors group-hover:bg-brand-50">

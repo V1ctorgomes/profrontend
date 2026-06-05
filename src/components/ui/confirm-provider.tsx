@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { btnDangerClass, btnSecondaryClass } from '@/lib/styles';
+import { btnDangerClass, btnSecondaryClass, modalClass } from '@/lib/styles';
 
 interface ConfirmOptions {
   title: string;
@@ -55,7 +55,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
             className="absolute inset-0 bg-slate-950/50 backdrop-blur-[2px]"
             onClick={() => close(false)}
           />
-          <div className="relative w-full max-w-md animate-in zoom-in-95 fade-in rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.18)] duration-200">
+          <div className={`${modalClass} relative w-full max-w-md animate-in zoom-in-95 fade-in duration-200`}>
             <div className="flex items-start gap-4">
               <div
                 className={

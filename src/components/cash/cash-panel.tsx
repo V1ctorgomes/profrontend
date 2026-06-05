@@ -14,6 +14,8 @@ import {
   loadingClass,
   tableClass,
   tableHeadClass,
+  boxEffects,
+  metricBoxClass,
 } from '@/lib/styles';
 
 interface ExpectedCash {
@@ -129,27 +131,27 @@ export function CashPanel() {
                 Valores esperados hoje
               </h2>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Dinheiro</p>
                   <p className="font-semibold">{formatCurrency(expected.expectedCash)}</p>
                 </div>
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">PIX</p>
                   <p className="font-semibold">{formatCurrency(expected.expectedPix)}</p>
                 </div>
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Débito</p>
                   <p className="font-semibold">
                     {formatCurrency(expected.expectedDebit)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Crédito</p>
                   <p className="font-semibold">
                     {formatCurrency(expected.expectedCredit)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-brand-50 px-4 py-3">
+                <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-brand-600">Vendas hoje</p>
                   <p className="font-semibold text-brand-900">
                     {expected.salesCount}

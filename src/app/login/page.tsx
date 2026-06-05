@@ -1,5 +1,6 @@
 import { ShieldCheck, Shirt } from 'lucide-react';
 import { LoginForm } from '@/components/auth/login-form';
+import { cardClass } from '@/lib/styles';
 
 export default function LoginPage() {
   return (
@@ -49,7 +50,7 @@ export default function LoginPage() {
             <p className="mt-1 text-sm text-slate-500">ERP para lojas de moda</p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className={`${cardClass} p-6`}>
             <div className="mb-6">
               <h2 className="text-lg font-bold text-brand-900">Acessar o sistema</h2>
               <p className="mt-1 text-sm text-slate-500">

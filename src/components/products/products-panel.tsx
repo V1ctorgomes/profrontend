@@ -15,6 +15,8 @@ import {
   selectClass,
   tableClass,
   tableHeadClass,
+  tabButtonActiveClass,
+  tabButtonInactiveClass,
 } from '@/lib/styles';
 import { formatCurrency } from '@/lib/format';
 import type { Brand, Category, Product } from '@/types/catalog';
@@ -191,11 +193,7 @@ export function ProductsPanel() {
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              tab === t.id
-                ? 'bg-brand-900 text-white'
-                : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
-            }`}
+            className={tab === t.id ? tabButtonActiveClass : tabButtonInactiveClass}
           >
             {t.label}
           </button>

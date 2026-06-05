@@ -7,7 +7,7 @@ import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
-import { cardClass, inputClass, loadingClass, tableClass, tableHeadClass } from '@/lib/styles';
+import { cardClass, inputClass, loadingClass, tableClass, tableHeadClass, btnPrimaryClass, boxEffects, metricBoxClass } from '@/lib/styles';
 
 interface SalesReport {
   summary: {
@@ -125,7 +125,7 @@ export function ReportsPanel() {
         <button
           type="button"
           onClick={load}
-          className="rounded-lg bg-brand-900 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
+          className={btnPrimaryClass}
         >
           Filtrar
         </button>
@@ -144,23 +144,23 @@ export function ReportsPanel() {
                 Vendas
               </h2>
               <div className="mb-4 grid gap-3 sm:grid-cols-4">
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Quantidade</p>
                   <p className="text-xl font-semibold">{sales.summary.salesCount}</p>
                 </div>
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Faturamento</p>
                   <p className="text-xl font-semibold">
                     {formatCurrency(sales.summary.totalRevenue)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Descontos</p>
                   <p className="text-xl font-semibold">
                     {formatCurrency(sales.summary.totalDiscount)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-brand-50 px-4 py-3">
+                <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-brand-600">Ticket médio</p>
                   <p className="text-xl font-semibold text-brand-900">
                     {formatCurrency(sales.summary.averageTicket)}
@@ -236,25 +236,25 @@ export function ReportsPanel() {
             <div className={`${cardClass} p-5`}>
               <h2 className="mb-4 font-semibold text-brand-900">Financeiro</h2>
               <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                <div className="rounded-lg bg-green-50 px-4 py-3">
+                <div className={`rounded-lg bg-green-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-green-600">Receita vendas</p>
                   <p className="text-xl font-semibold text-green-700">
                     {formatCurrency(financial.salesRevenue)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-red-50 px-4 py-3">
+                <div className={`rounded-lg bg-red-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-red-500">Compras</p>
                   <p className="text-xl font-semibold text-red-600">
                     {formatCurrency(financial.purchasesTotal)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-slate-50 px-4 py-3">
+                <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Despesas manuais</p>
                   <p className="text-xl font-semibold">
                     {formatCurrency(financial.manualExpense)}
                   </p>
                 </div>
-                <div className="rounded-lg bg-brand-50 px-4 py-3">
+                <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-brand-600">Lucro estimado</p>
                   <p className="text-xl font-semibold text-brand-900">
                     {formatCurrency(financial.estimatedProfit)}

@@ -16,6 +16,7 @@ import {
   selectClass,
   tableClass,
   tableHeadClass,
+  boxEffects,
 } from '@/lib/styles';
 
 interface FinancialEntry {
@@ -128,7 +129,7 @@ export function FinancialPanel() {
         <div className="space-y-6">
           {summary && (
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className={`${cardClass} flex items-center gap-3 p-5`}>
+              <div className={`${cardClass} flex items-center gap-3 p-5 ${boxEffects}`}>
                 <TrendingUp className="h-8 w-8 text-green-600" />
                 <div>
                   <p className="text-xs text-slate-500">Receitas</p>
@@ -137,7 +138,7 @@ export function FinancialPanel() {
                   </p>
                 </div>
               </div>
-              <div className={`${cardClass} flex items-center gap-3 p-5`}>
+              <div className={`${cardClass} flex items-center gap-3 p-5 ${boxEffects}`}>
                 <TrendingDown className="h-8 w-8 text-red-500" />
                 <div>
                   <p className="text-xs text-slate-500">Despesas</p>
@@ -146,7 +147,7 @@ export function FinancialPanel() {
                   </p>
                 </div>
               </div>
-              <div className={`${cardClass} p-5`}>
+              <div className={`${cardClass} p-5 ${boxEffects}`}>
                 <p className="text-xs text-slate-500">Saldo (incl. vendas)</p>
                 <p
                   className={`text-xl font-semibold ${

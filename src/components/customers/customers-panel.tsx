@@ -15,6 +15,7 @@ import {
   loadingClass,
   tableClass,
   tableHeadClass,
+  boxEffects,
 } from '@/lib/styles';
 import type { Customer, CustomerDetail } from '@/types/customer';
 
@@ -244,13 +245,13 @@ export function CustomersPanel() {
                     </button>
                   </div>
                   <div className="mb-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-lg bg-slate-50 p-3">
+                    <div className={`rounded-lg bg-slate-50 p-3 ${boxEffects}`}>
                       <p className="text-slate-500">Total gasto</p>
                       <p className="font-bold">
                         {formatCurrency(selected.stats.totalSpent)}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-slate-50 p-3">
+                    <div className={`rounded-lg bg-slate-50 p-3 ${boxEffects}`}>
                       <p className="text-slate-500">Ticket médio</p>
                       <p className="font-bold">
                         {formatCurrency(selected.stats.averageTicket)}
