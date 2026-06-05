@@ -1,6 +1,6 @@
 import { AlertTriangle, ShoppingBag, Tag, TrendingUp } from 'lucide-react';
 import { StatCard } from '@/components/dashboard/stat-card';
-import { formatCurrency } from '@/lib/auth';
+import { formatCurrency } from '@/lib/format';
 import type { UserDashboardMetrics } from '@/types/auth';
 
 interface UserDashboardProps {

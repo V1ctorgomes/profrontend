@@ -7,7 +7,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { StatCard } from '@/components/dashboard/stat-card';
-import { formatCurrency } from '@/lib/auth';
+import { formatCurrency } from '@/lib/format';
 import type { AdminDashboardMetrics } from '@/types/auth';
 
 interface AdminDashboardProps {

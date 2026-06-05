@@ -1,10 +1,5 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ProductsPanel } from '@/components/products/products-panel';
 
 export default function ProdutosPage() {
-  return (
-    <ComingSoon
-      title="Produtos"
-      description="Cadastro de marcas, categorias e produtos com preços e estoque mínimo"
-    />
-  );
+  return <ProductsPanel />;
 }

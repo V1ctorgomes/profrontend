@@ -1,10 +1,5 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { StockPanel } from '@/components/stock/stock-panel';
 
 export default function EstoquePage() {
-  return (
-    <ComingSoon
-      title="Estoque"
-      description="Controle por marca, categoria, modelo e tamanho com movimentações"
-    />
-  );
+  return <StockPanel />;
 }

@@ -1,10 +1,5 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { CustomersPanel } from '@/components/customers/customers-panel';
 
 export default function ClientesPage() {
-  return (
-    <ComingSoon
-      title="Clientes"
-      description="Cadastro e histórico completo de compras dos clientes"
-    />
-  );
+  return <CustomersPanel />;
 }
