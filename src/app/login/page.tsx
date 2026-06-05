@@ -1,86 +1,71 @@
-import { ShieldCheck, Shirt, Sparkles } from 'lucide-react';
+import { ShieldCheck, Shirt } from 'lucide-react';
 import { LoginForm } from '@/components/auth/login-form';
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen w-full font-sans selection:bg-accent-soft selection:text-brand-900">
-      <div className="relative hidden w-[52%] flex-col justify-between overflow-hidden bg-brand-950 p-14 text-white xl:flex">
-        <div className="pointer-events-none absolute inset-0">
+    <div className="flex min-h-screen w-full bg-brand-canvas font-sans selection:bg-brand-100 selection:text-brand-900">
+      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-brand-900 p-12 text-white lg:flex">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
           <div
-            className="absolute inset-0 opacity-40"
+            className="absolute inset-0"
             style={{
               backgroundImage:
-                'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)',
-              backgroundSize: '32px 32px',
+                'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)',
+              backgroundSize: '28px 28px',
             }}
           />
-          <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
-          <div className="absolute bottom-0 left-0 h-72 w-72 rounded-full bg-white/5 blur-3xl" />
         </div>
 
-        <div className="relative z-10 flex items-center gap-3.5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-brand-900 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-brand-900">
             <Shirt className="h-5 w-5" />
           </div>
-          <div>
-            <span className="text-lg font-bold tracking-[0.08em]">PROGRIFES</span>
-            <p className="text-[11px] font-medium tracking-[0.14em] text-white/40 uppercase">
-              Enterprise Platform
-            </p>
-          </div>
+          <span className="text-lg font-bold tracking-tight">PROGRIFES</span>
         </div>
 
-        <div className="relative z-10 max-w-lg space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70">
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
-            Plataforma corporativa de gestão
-          </div>
-          <h2 className="text-4xl leading-[1.15] font-bold tracking-tight xl:text-5xl">
-            Operações de moda em escala enterprise
+        <div className="relative z-10 space-y-4">
+          <h2 className="text-4xl leading-tight font-bold tracking-tight">
+            Gestão inteligente para lojas de moda
           </h2>
-          <p className="text-base leading-relaxed text-white/55">
-            Estoque, PDV, financeiro e inteligência operacional unificados para
-            redes e operações de alto volume.
+          <p className="max-w-md text-sm text-white/70">
+            Controle estoque, vendas, clientes e financeiro em um único sistema.
           </p>
         </div>
 
-        <p className="relative z-10 text-xs text-white/30">
-          © {new Date().getFullYear()} Progrifes ERP · Todos os direitos reservados
+        <p className="relative z-10 text-xs text-white/40">
+          © {new Date().getFullYear()} Progrifes ERP
         </p>
       </div>
 
-      <div className="app-shell-bg flex w-full flex-col justify-center px-8 py-12 sm:px-16 xl:w-[48%] xl:px-20">
-        <div className="mx-auto w-full max-w-[440px]">
-          <div className="mb-10 xl:hidden">
-            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-900 text-white shadow-lg">
+      <div className="flex w-full flex-col justify-center bg-gradient-to-br from-white via-brand-canvas to-brand-50/60 px-8 py-12 sm:px-16 lg:w-1/2 lg:px-24">
+        <div className="mx-auto w-full max-w-[420px]">
+          <div className="mb-8 lg:hidden">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-900 text-white">
               <Shirt className="h-6 w-6" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-brand-900">
               PROGRIFES
             </h1>
-            <p className="mt-1 text-sm text-slate-500">Enterprise ERP</p>
+            <p className="mt-1 text-sm text-slate-500">ERP para lojas de moda</p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-[0_8px_40px_rgba(15,23,42,0.08)]">
-            <div className="mb-7">
-              <p className="text-[11px] font-bold tracking-[0.14em] text-accent uppercase">
-                Acesso seguro
-              </p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-900">
-                Entrar no sistema
-              </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Use suas credenciais corporativas para continuar
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-lg font-bold text-brand-900">Acessar o sistema</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Entre com suas credenciais para gerenciar a loja
               </p>
             </div>
             <LoginForm />
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-2 text-slate-400">
+          <p className="mt-6 text-center text-xs text-slate-500">
+            admin@progrifes.com / admin123 · vendedor@progrifes.com / user123
+          </p>
+
+          <div className="mt-8 flex items-center justify-center gap-2 text-brand-700/50">
             <ShieldCheck className="h-4 w-4" />
-            <span className="text-xs font-medium">
-              Conexão criptografada · SSO ready
-            </span>
+            <span className="text-xs font-medium">Acesso seguro e encriptado</span>
           </div>
         </div>
       </div>

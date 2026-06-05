@@ -129,7 +129,6 @@ export function StockPanel() {
   return (
     <div>
       <PageHeader
-        badge="Operações"
         title="Estoque"
         description="Controle de quantidades por tamanho e movimentações"
         action={

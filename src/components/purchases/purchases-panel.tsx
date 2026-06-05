@@ -126,7 +126,6 @@ export function PurchasesPanel() {
   return (
     <div>
       <PageHeader
-        badge="Operações"
         title="Compras"
         description="Registro de compras de fornecedores com entrada automática no estoque"
       />

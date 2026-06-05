@@ -79,7 +79,6 @@ export function UsersPanel() {
   return (
     <div>
       <PageHeader
-        badge="Administração"
         title="Usuários"
         description="Gerenciamento de contas e permissões"
       />

@@ -208,7 +208,6 @@ export function SalesPanel() {
   return (
     <div>
       <PageHeader
-        badge="PDV"
         title="Vendas (PDV)"
         description="Ponto de venda com carrinho, promoções e múltiplos pagamentos"
       />

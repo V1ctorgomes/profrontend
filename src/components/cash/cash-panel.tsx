@@ -112,7 +112,6 @@ export function CashPanel() {
   return (
     <div>
       <PageHeader
-        badge="Financeiro"
         title="Caixa"
         description="Fechamento diário comparando valores declarados com vendas do dia"
       />

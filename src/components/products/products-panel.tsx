@@ -10,7 +10,6 @@ import {
   btnDangerClass,
   btnPrimaryClass,
   cardClass,
-  cardHeaderClass,
   inputClass,
   loadingClass,
   selectClass,
@@ -182,21 +181,20 @@ export function ProductsPanel() {
   return (
     <div>
       <PageHeader
-        badge="Catálogo"
         title="Produtos"
         description="Cadastro de marcas, categorias e produtos da loja"
       />
 
-      <div className="mb-6 flex flex-wrap gap-2 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm">
+      <div className="mb-6 flex flex-wrap gap-2">
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               tab === t.id
-                ? 'bg-brand-900 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-50 hover:text-brand-900'
+                ? 'bg-brand-900 text-white'
+                : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
             }`}
           >
             {t.label}
@@ -214,7 +212,7 @@ export function ProductsPanel() {
           {tab === 'brands' && (
             <div className="grid gap-6 lg:grid-cols-2">
               <form onSubmit={handleCreateBrand} className={`${cardClass} p-5`}>
-                <h2 className={cardHeaderClass}>Nova marca</h2>
+                <h2 className="mb-4 font-semibold text-brand-900">Nova marca</h2>
                 <input
                   className={inputClass}
                   placeholder="Ex: Nike"

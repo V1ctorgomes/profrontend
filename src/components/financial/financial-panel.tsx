@@ -116,7 +116,6 @@ export function FinancialPanel() {
   return (
     <div>
       <PageHeader
-        badge="Financeiro"
         title="Financeiro"
         description="Lançamentos de receitas e despesas administrativas"
       />

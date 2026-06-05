@@ -98,7 +98,6 @@ export function CustomersPanel() {
   return (
     <div>
       <PageHeader
-        badge="Operações"
         title="Clientes"
         description="Cadastro e histórico de compras dos clientes"
       />

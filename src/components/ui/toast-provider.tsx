@@ -58,7 +58,17 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const push = useCallback(
     (variant: ToastVariant, title: string, description?: string) => {
       const id = crypto.randomUUID();
-      setToasts((prev) => [...prev, { id, title, description, variant }]);
+      setToasts((prev) => {
+        const duplicate = prev.some(
+          (t) =>
+            t.variant === variant &&
+            t.title === title &&
+            t.description === description,
+        );
+        if (duplicate) return prev;
+        const next = [...prev, { id, title, description, variant }];
+        return next.slice(-3);
+      });
       window.setTimeout(() => dismiss(id), 4500);
     },
     [dismiss],
@@ -87,8 +97,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <div
               key={toast.id}
               className={cn(
-                'pointer-events-auto animate-in slide-in-from-right-full fade-in duration-300',
-                'flex items-start gap-3 rounded-xl border p-4 shadow-[0_12px_40px_rgba(15,23,42,0.12)] backdrop-blur-sm',
+                'pointer-events-auto flex items-start gap-3 rounded-lg border p-3 shadow-md',
                 config.ring,
               )}
             >

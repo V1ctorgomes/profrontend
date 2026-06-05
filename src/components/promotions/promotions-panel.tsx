@@ -118,7 +118,6 @@ export function PromotionsPanel() {
   return (
     <div>
       <PageHeader
-        badge="PDV"
         title="Promoções"
         description="Gerencie descontos aplicados no PDV"
       />

@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Wallet,
 } from 'lucide-react';
-import { PageHeader } from '@/components/layout/page-header';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { formatCurrency } from '@/lib/format';
 import type { AdminDashboardMetrics } from '@/types/auth';
@@ -18,11 +17,12 @@ interface AdminDashboardProps {
 export function AdminDashboard({ metrics }: AdminDashboardProps) {
   return (
     <div className="space-y-8">
-      <PageHeader
-        badge="Executive"
-        title="Visão Geral"
-        description="Indicadores financeiros e operacionais consolidados da operação"
-      />
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Visão Geral</h1>
+        <p className="text-slate-500">
+          Indicadores financeiros e operacionais da loja
+        </p>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

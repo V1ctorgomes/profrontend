@@ -100,7 +100,6 @@ export function ReportsPanel() {
   return (
     <div>
       <PageHeader
-        badge="Relatórios"
         title="Relatórios"
         description="Visão consolidada de vendas, estoque e financeiro"
       />
