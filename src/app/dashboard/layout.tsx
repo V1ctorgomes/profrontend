@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
-import { AppHeader } from '@/components/layout/app-header';
 import { getServerUser } from '@/lib/auth';
 
 export default async function DashboardLayout({
@@ -19,7 +18,12 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <AppSidebar user={user} />
       <SidebarInset className="bg-brand-canvas">
-        <AppHeader user={user} />
+        <div className="flex h-14 items-center gap-3 border-b border-border bg-white px-4 md:hidden">
+          <SidebarTrigger />
+          <span className="text-sm font-bold tracking-tight text-brand-900">
+            PROGRIFES
+          </span>
+        </div>
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
