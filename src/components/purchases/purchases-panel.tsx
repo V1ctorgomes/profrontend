@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus } from 'lucide-react';
 import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
+import { FormModal } from '@/components/ui/form-modal';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
 import {
   btnPrimaryClass,
+  btnSecondaryClass,
   cardClass,
   inputClass,
   loadingClass,
@@ -38,20 +40,24 @@ interface Purchase {
   }[];
 }
 
+const emptyPurchaseForm = {
+  supplierId: '',
+  productId: '',
+  size: '',
+  quantity: '1',
+  unitPrice: '',
+};
+
 export function PurchasesPanel() {
   const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
+  const [supplierModalOpen, setSupplierModalOpen] = useState(false);
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [supplierName, setSupplierName] = useState('');
-  const [form, setForm] = useState({
-    supplierId: '',
-    productId: '',
-    size: '',
-    quantity: '1',
-    unitPrice: '',
-  });
+  const [form, setForm] = useState(emptyPurchaseForm);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,6 +87,15 @@ export function PurchasesPanel() {
     load();
   }, [load]);
 
+  function openPurchaseModal() {
+    setForm((f) => ({
+      ...emptyPurchaseForm,
+      supplierId: f.supplierId || suppliers[0]?.id || '',
+      productId: f.productId || products[0]?.id || '',
+    }));
+    setPurchaseModalOpen(true);
+  }
+
   async function handleCreateSupplier(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -91,6 +106,7 @@ export function PurchasesPanel() {
       });
       const name = supplierName;
       setSupplierName('');
+      setSupplierModalOpen(false);
       toast.success('Fornecedor criado', `"${name}" foi adicionado.`);
       await load();
     } catch (err) {
@@ -116,6 +132,7 @@ export function PurchasesPanel() {
           ],
         }),
       });
+      setPurchaseModalOpen(false);
       setForm((f) => ({ ...f, size: '', quantity: '1', unitPrice: '' }));
       toast.success('Compra registrada', 'Entrada no estoque realizada automaticamente.');
       await load();
@@ -129,101 +146,30 @@ export function PurchasesPanel() {
       <PageHeader
         title="Compras"
         description="Registro de compras de fornecedores com entrada automática no estoque"
+        action={
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setSupplierModalOpen(true)}
+              className={btnSecondaryClass}
+            >
+              <Plus className="h-4 w-4" />
+              Novo fornecedor
+            </button>
+            <button type="button" onClick={openPurchaseModal} className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Nova compra
+            </button>
+          </div>
+        }
       />
       <PageContent>
-      {loading ? (
-        <div className={loadingClass}>
-          <Loader2 className="h-5 w-5 animate-spin" />
-          Carregando...
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <form onSubmit={handleCreateSupplier} className={`${cardClass} p-5`}>
-              <h2 className="mb-4 font-semibold text-brand-900">Novo fornecedor</h2>
-              <input
-                className={inputClass}
-                placeholder="Nome do fornecedor"
-                value={supplierName}
-                onChange={(e) => setSupplierName(e.target.value)}
-                required
-              />
-              <button type="submit" className={`${btnPrimaryClass} mt-4 w-full`}>
-                <Plus className="h-4 w-4" />
-                Adicionar
-              </button>
-            </form>
-            <form onSubmit={handleCreatePurchase} className={`${cardClass} p-5`}>
-              <h2 className="mb-4 font-semibold text-brand-900">Nova compra</h2>
-              <div className="space-y-3">
-                <select
-                  className={selectClass}
-                  value={form.supplierId}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, supplierId: e.target.value }))
-                  }
-                  required
-                >
-                  <option value="">Fornecedor</option>
-                  {suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className={selectClass}
-                  value={form.productId}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, productId: e.target.value }))
-                  }
-                  required
-                >
-                  <option value="">Produto</option>
-                  {products.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.brand.name} — {p.model}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className={inputClass}
-                  placeholder="Tamanho"
-                  value={form.size}
-                  onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
-                  required
-                />
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    className={inputClass}
-                    type="number"
-                    min="1"
-                    placeholder="Qtd"
-                    value={form.quantity}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, quantity: e.target.value }))
-                    }
-                    required
-                  />
-                  <input
-                    className={inputClass}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="Valor unit."
-                    value={form.unitPrice}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, unitPrice: e.target.value }))
-                    }
-                    required
-                  />
-                </div>
-              </div>
-              <button type="submit" className={`${btnPrimaryClass} mt-4 w-full`}>
-                Registrar compra
-              </button>
-            </form>
+        {loading ? (
+          <div className={loadingClass}>
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Carregando...
           </div>
+        ) : (
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
               <thead className={tableHeadClass}>
@@ -259,9 +205,118 @@ export function PurchasesPanel() {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
       </PageContent>
+
+      <FormModal
+        open={supplierModalOpen}
+        onClose={() => {
+          setSupplierModalOpen(false);
+          setSupplierName('');
+        }}
+        title="Novo fornecedor"
+        description="Cadastre um fornecedor para registrar compras."
+      >
+        <form onSubmit={handleCreateSupplier} className="space-y-4">
+          <input
+            className={inputClass}
+            placeholder="Nome do fornecedor"
+            value={supplierName}
+            onChange={(e) => setSupplierName(e.target.value)}
+            required
+          />
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setSupplierModalOpen(false)}
+              className={btnSecondaryClass}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Adicionar
+            </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={purchaseModalOpen}
+        onClose={() => setPurchaseModalOpen(false)}
+        title="Nova compra"
+        description="A entrada no estoque será feita automaticamente."
+        size="md"
+      >
+        <form onSubmit={handleCreatePurchase} className="space-y-3">
+          <select
+            className={selectClass}
+            value={form.supplierId}
+            onChange={(e) => setForm((f) => ({ ...f, supplierId: e.target.value }))}
+            required
+          >
+            <option value="">Fornecedor</option>
+            {suppliers.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <select
+            className={selectClass}
+            value={form.productId}
+            onChange={(e) => setForm((f) => ({ ...f, productId: e.target.value }))}
+            required
+          >
+            <option value="">Produto</option>
+            {products.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.brand.name} — {p.model}
+              </option>
+            ))}
+          </select>
+          <input
+            className={inputClass}
+            placeholder="Tamanho"
+            value={form.size}
+            onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
+            required
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              className={inputClass}
+              type="number"
+              min="1"
+              placeholder="Qtd"
+              value={form.quantity}
+              onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))}
+              required
+            />
+            <input
+              className={inputClass}
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Valor unit."
+              value={form.unitPrice}
+              onChange={(e) => setForm((f) => ({ ...f, unitPrice: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setPurchaseModalOpen(false)}
+              className={btnSecondaryClass}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              Registrar compra
+            </button>
+          </div>
+        </form>
+      </FormModal>
     </>
   );
 }

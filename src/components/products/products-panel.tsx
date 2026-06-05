@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
+import { FormModal } from '@/components/ui/form-modal';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import {
   btnDangerClass,
   btnPrimaryClass,
+  btnSecondaryClass,
   cardClass,
   inputClass,
   loadingClass,
@@ -24,24 +26,27 @@ import type { Brand, Category, Product } from '@/types/catalog';
 
 type Tab = 'products' | 'brands' | 'categories';
 
+const emptyProductForm = {
+  brandId: '',
+  categoryId: '',
+  model: '',
+  costPrice: '',
+  salePrice: '',
+  minStock: '0',
+};
+
 export function ProductsPanel() {
   const { toast, fail, confirmDelete } = usePanelFeedback();
   const [tab, setTab] = useState<Tab>('products');
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
 
   const [brandName, setBrandName] = useState('');
   const [categoryName, setCategoryName] = useState('');
-  const [productForm, setProductForm] = useState({
-    brandId: '',
-    categoryId: '',
-    model: '',
-    costPrice: '',
-    salePrice: '',
-    minStock: '0',
-  });
+  const [productForm, setProductForm] = useState(emptyProductForm);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,11 +66,7 @@ export function ProductsPanel() {
         categoryId: f.categoryId || c[0]?.id || '',
       }));
     } catch (err) {
-      fail(
-        'Erro ao carregar',
-        err,
-        'Não foi possível carregar os dados',
-      );
+      fail('Erro ao carregar', err, 'Não foi possível carregar os dados');
     } finally {
       setLoading(false);
     }
@@ -74,6 +75,25 @@ export function ProductsPanel() {
   useEffect(() => {
     load();
   }, [load]);
+
+  function openModal() {
+    if (tab === 'products') {
+      setProductForm((f) => ({
+        ...emptyProductForm,
+        brandId: f.brandId || brands[0]?.id || '',
+        categoryId: f.categoryId || categories[0]?.id || '',
+      }));
+    } else if (tab === 'brands') {
+      setBrandName('');
+    } else {
+      setCategoryName('');
+    }
+    setModalOpen(true);
+  }
+
+  function closeModal() {
+    setModalOpen(false);
+  }
 
   async function handleCreateBrand(e: React.FormEvent) {
     e.preventDefault();
@@ -84,7 +104,7 @@ export function ProductsPanel() {
         token: getClientToken(),
         body: JSON.stringify({ name }),
       });
-      setBrandName('');
+      closeModal();
       toast.success('Marca criada', `"${name}" foi adicionada ao catálogo.`);
       await load();
     } catch (err) {
@@ -101,8 +121,8 @@ export function ProductsPanel() {
         token: getClientToken(),
         body: JSON.stringify({ name }),
       });
+      closeModal();
       toast.success('Categoria criada', `"${name}" foi adicionada.`);
-      setCategoryName('');
       await load();
     } catch (err) {
       fail('Erro ao criar categoria', err, 'Tente novamente.');
@@ -125,14 +145,8 @@ export function ProductsPanel() {
           minStock: Number(productForm.minStock),
         }),
       });
+      closeModal();
       toast.success('Produto criado', `${model} cadastrado com sucesso.`);
-      setProductForm((f) => ({
-        ...f,
-        model: '',
-        costPrice: '',
-        salePrice: '',
-        minStock: '0',
-      }));
       await load();
     } catch (err) {
       fail('Erro ao criar produto', err, 'Tente novamente.');
@@ -181,50 +195,54 @@ export function ProductsPanel() {
     { id: 'categories', label: 'Categorias' },
   ];
 
+  const addLabels: Record<Tab, string> = {
+    products: 'Novo produto',
+    brands: 'Nova marca',
+    categories: 'Nova categoria',
+  };
+
+  const modalTitles: Record<Tab, string> = {
+    products: 'Novo produto',
+    brands: 'Nova marca',
+    categories: 'Nova categoria',
+  };
+
   return (
     <>
       <PageHeader
         title="Produtos"
         description="Cadastro de marcas, categorias e produtos da loja"
+        action={
+          !loading ? (
+            <button type="button" onClick={openModal} className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              {addLabels[tab]}
+            </button>
+          ) : undefined
+        }
       />
       <PageContent>
-
-      <div className="mb-6 flex flex-wrap gap-2">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={tab === t.id ? tabButtonActiveClass : tabButtonInactiveClass}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <div className={loadingClass}>
-          <Loader2 className="h-5 w-5 animate-spin" />
-          Carregando catálogo...
+        <div className="mb-6 flex flex-wrap gap-2">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={tab === t.id ? tabButtonActiveClass : tabButtonInactiveClass}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
-      ) : (
-        <>
-          {tab === 'brands' && (
-            <div className="grid gap-6 lg:grid-cols-2">
-              <form onSubmit={handleCreateBrand} className={`${cardClass} p-5`}>
-                <h2 className="mb-4 font-semibold text-brand-900">Nova marca</h2>
-                <input
-                  className={inputClass}
-                  placeholder="Ex: Nike"
-                  value={brandName}
-                  onChange={(e) => setBrandName(e.target.value)}
-                  required
-                />
-                <button type="submit" className={`${btnPrimaryClass} mt-4 w-full`}>
-                  <Plus className="h-4 w-4" />
-                  Adicionar marca
-                </button>
-              </form>
+
+        {loading ? (
+          <div className={loadingClass}>
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Carregando catálogo...
+          </div>
+        ) : (
+          <>
+            {tab === 'brands' && (
               <div className={`${cardClass} overflow-hidden`}>
                 <table className={tableClass}>
                   <thead className={tableHeadClass}>
@@ -251,25 +269,9 @@ export function ProductsPanel() {
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
+            )}
 
-          {tab === 'categories' && (
-            <div className="grid gap-6 lg:grid-cols-2">
-              <form onSubmit={handleCreateCategory} className={`${cardClass} p-5`}>
-                <h2 className="mb-4 font-semibold text-brand-900">Nova categoria</h2>
-                <input
-                  className={inputClass}
-                  placeholder="Ex: Camiseta"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  required
-                />
-                <button type="submit" className={`${btnPrimaryClass} mt-4 w-full`}>
-                  <Plus className="h-4 w-4" />
-                  Adicionar categoria
-                </button>
-              </form>
+            {tab === 'categories' && (
               <div className={`${cardClass} overflow-hidden`}>
                 <table className={tableClass}>
                   <thead className={tableHeadClass}>
@@ -296,95 +298,9 @@ export function ProductsPanel() {
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
+            )}
 
-          {tab === 'products' && (
-            <div className="space-y-6">
-              <form onSubmit={handleCreateProduct} className={`${cardClass} p-5`}>
-                <h2 className="mb-4 font-semibold text-brand-900">Novo produto</h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <select
-                    className={selectClass}
-                    value={productForm.brandId}
-                    onChange={(e) =>
-                      setProductForm((f) => ({ ...f, brandId: e.target.value }))
-                    }
-                    required
-                  >
-                    <option value="">Marca</option>
-                    {brands.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    className={selectClass}
-                    value={productForm.categoryId}
-                    onChange={(e) =>
-                      setProductForm((f) => ({ ...f, categoryId: e.target.value }))
-                    }
-                    required
-                  >
-                    <option value="">Categoria</option>
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    className={inputClass}
-                    placeholder="Modelo"
-                    value={productForm.model}
-                    onChange={(e) =>
-                      setProductForm((f) => ({ ...f, model: e.target.value }))
-                    }
-                    required
-                  />
-                  <input
-                    className={inputClass}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="Preço de custo"
-                    value={productForm.costPrice}
-                    onChange={(e) =>
-                      setProductForm((f) => ({ ...f, costPrice: e.target.value }))
-                    }
-                    required
-                  />
-                  <input
-                    className={inputClass}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="Preço de venda"
-                    value={productForm.salePrice}
-                    onChange={(e) =>
-                      setProductForm((f) => ({ ...f, salePrice: e.target.value }))
-                    }
-                    required
-                  />
-                  <input
-                    className={inputClass}
-                    type="number"
-                    min="0"
-                    placeholder="Estoque mínimo"
-                    value={productForm.minStock}
-                    onChange={(e) =>
-                      setProductForm((f) => ({ ...f, minStock: e.target.value }))
-                    }
-                    required
-                  />
-                </div>
-                <button type="submit" className={`${btnPrimaryClass} mt-4`}>
-                  <Plus className="h-4 w-4" />
-                  Adicionar produto
-                </button>
-              </form>
-
+            {tab === 'products' && (
               <div className={`${cardClass} overflow-x-auto`}>
                 <table className={tableClass}>
                   <thead className={tableHeadClass}>
@@ -431,11 +347,158 @@ export function ProductsPanel() {
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
       </PageContent>
+
+      <FormModal
+        open={modalOpen && tab === 'brands'}
+        onClose={closeModal}
+        title={modalTitles.brands}
+        description="Adicione uma nova marca ao catálogo."
+      >
+        <form onSubmit={handleCreateBrand} className="space-y-4">
+          <input
+            className={inputClass}
+            placeholder="Ex: Nike"
+            value={brandName}
+            onChange={(e) => setBrandName(e.target.value)}
+            required
+          />
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={closeModal} className={btnSecondaryClass}>
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Adicionar marca
+            </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={modalOpen && tab === 'categories'}
+        onClose={closeModal}
+        title={modalTitles.categories}
+        description="Adicione uma nova categoria ao catálogo."
+      >
+        <form onSubmit={handleCreateCategory} className="space-y-4">
+          <input
+            className={inputClass}
+            placeholder="Ex: Camiseta"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+            required
+          />
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={closeModal} className={btnSecondaryClass}>
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Adicionar categoria
+            </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={modalOpen && tab === 'products'}
+        onClose={closeModal}
+        title={modalTitles.products}
+        description="Cadastre um novo produto na loja."
+        size="lg"
+      >
+        <form onSubmit={handleCreateProduct} className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <select
+              className={selectClass}
+              value={productForm.brandId}
+              onChange={(e) =>
+                setProductForm((f) => ({ ...f, brandId: e.target.value }))
+              }
+              required
+            >
+              <option value="">Marca</option>
+              {brands.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+            <select
+              className={selectClass}
+              value={productForm.categoryId}
+              onChange={(e) =>
+                setProductForm((f) => ({ ...f, categoryId: e.target.value }))
+              }
+              required
+            >
+              <option value="">Categoria</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <input
+              className={inputClass}
+              placeholder="Modelo"
+              value={productForm.model}
+              onChange={(e) =>
+                setProductForm((f) => ({ ...f, model: e.target.value }))
+              }
+              required
+            />
+            <input
+              className={inputClass}
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Preço de custo"
+              value={productForm.costPrice}
+              onChange={(e) =>
+                setProductForm((f) => ({ ...f, costPrice: e.target.value }))
+              }
+              required
+            />
+            <input
+              className={inputClass}
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Preço de venda"
+              value={productForm.salePrice}
+              onChange={(e) =>
+                setProductForm((f) => ({ ...f, salePrice: e.target.value }))
+              }
+              required
+            />
+            <input
+              className={inputClass}
+              type="number"
+              min="0"
+              placeholder="Estoque mínimo"
+              value={productForm.minStock}
+              onChange={(e) =>
+                setProductForm((f) => ({ ...f, minStock: e.target.value }))
+              }
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" onClick={closeModal} className={btnSecondaryClass}>
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Adicionar produto
+            </button>
+          </div>
+        </form>
+      </FormModal>
     </>
   );
 }

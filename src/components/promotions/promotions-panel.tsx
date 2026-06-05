@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
+import { FormModal } from '@/components/ui/form-modal';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import {
   btnDangerClass,
   btnPrimaryClass,
+  btnSecondaryClass,
   cardClass,
   inputClass,
   loadingClass,
@@ -33,17 +35,20 @@ const typeLabels: Record<Promotion['type'], string> = {
   FIXED_VALUE: 'Valor fixo (R$)',
 };
 
+const emptyForm = {
+  name: '',
+  type: 'PERCENTAGE' as Promotion['type'],
+  value: '',
+  startDate: '',
+  endDate: '',
+};
+
 export function PromotionsPanel() {
   const { toast, fail, confirmDelete } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const [form, setForm] = useState({
-    name: '',
-    type: 'PERCENTAGE' as Promotion['type'],
-    value: '',
-    startDate: '',
-    endDate: '',
-  });
+  const [form, setForm] = useState(emptyForm);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -63,6 +68,11 @@ export function PromotionsPanel() {
     load();
   }, [load]);
 
+  function closeModal() {
+    setModalOpen(false);
+    setForm(emptyForm);
+  }
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -78,7 +88,7 @@ export function PromotionsPanel() {
         }),
       });
       const name = form.name;
-      setForm({ name: '', type: 'PERCENTAGE', value: '', startDate: '', endDate: '' });
+      closeModal();
       toast.success('Promoção criada', `"${name}" foi adicionada.`);
       await load();
     } catch (err) {
@@ -93,9 +103,7 @@ export function PromotionsPanel() {
         token: getClientToken(),
         body: JSON.stringify({ active: !active }),
       });
-      toast.success(
-        active ? 'Promoção desativada' : 'Promoção ativada',
-      );
+      toast.success(active ? 'Promoção desativada' : 'Promoção ativada');
       await load();
     } catch (err) {
       fail('Erro ao atualizar', err, 'Erro ao atualizar');
@@ -121,75 +129,24 @@ export function PromotionsPanel() {
       <PageHeader
         title="Promoções"
         description="Gerencie descontos aplicados no PDV"
+        action={
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className={btnPrimaryClass}
+          >
+            <Plus className="h-4 w-4" />
+            Nova promoção
+          </button>
+        }
       />
       <PageContent>
-      {loading ? (
-        <div className={loadingClass}>
-          <Loader2 className="h-5 w-5 animate-spin" />
-          Carregando...
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <form onSubmit={handleCreate} className={`${cardClass} p-5`}>
-            <h2 className="mb-4 font-semibold text-brand-900">Nova promoção</h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              <input
-                className={inputClass}
-                placeholder="Nome"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                required
-              />
-              <select
-                className={selectClass}
-                value={form.type}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    type: e.target.value as Promotion['type'],
-                  }))
-                }
-              >
-                {Object.entries(typeLabels).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-              <input
-                className={inputClass}
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Valor"
-                value={form.value}
-                onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-                required
-              />
-              <input
-                className={inputClass}
-                type="date"
-                value={form.startDate}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, startDate: e.target.value }))
-                }
-                required
-              />
-              <input
-                className={inputClass}
-                type="date"
-                value={form.endDate}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, endDate: e.target.value }))
-                }
-                required
-              />
-            </div>
-            <button type="submit" className={`${btnPrimaryClass} mt-4`}>
-              <Plus className="h-4 w-4" />
-              Criar promoção
-            </button>
-          </form>
+        {loading ? (
+          <div className={loadingClass}>
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Carregando...
+          </div>
+        ) : (
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
               <thead className={tableHeadClass}>
@@ -241,9 +198,77 @@ export function PromotionsPanel() {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
       </PageContent>
+
+      <FormModal
+        open={modalOpen}
+        onClose={closeModal}
+        title="Nova promoção"
+        description="Configure o desconto e o período de validade."
+        size="lg"
+      >
+        <form onSubmit={handleCreate} className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input
+              className={inputClass}
+              placeholder="Nome"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              required
+            />
+            <select
+              className={selectClass}
+              value={form.type}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  type: e.target.value as Promotion['type'],
+                }))
+              }
+            >
+              {Object.entries(typeLabels).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v}
+                </option>
+              ))}
+            </select>
+            <input
+              className={inputClass}
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Valor"
+              value={form.value}
+              onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
+              required
+            />
+            <input
+              className={inputClass}
+              type="date"
+              value={form.startDate}
+              onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+              required
+            />
+            <input
+              className={inputClass}
+              type="date"
+              value={form.endDate}
+              onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <button type="button" onClick={closeModal} className={btnSecondaryClass}>
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Criar promoção
+            </button>
+          </div>
+        </form>
+      </FormModal>
     </>
   );
 }
