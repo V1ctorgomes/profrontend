@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -124,11 +125,12 @@ export function PurchasesPanel() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Compras"
         description="Registro de compras de fornecedores com entrada automática no estoque"
       />
+      <PageContent>
       {loading ? (
         <div className={loadingClass}>
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -259,6 +261,7 @@ export function PurchasesPanel() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

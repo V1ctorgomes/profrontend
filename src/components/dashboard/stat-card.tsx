@@ -19,16 +19,18 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <div className={cn(statCardClass, className)}>
-      <div className="relative mb-3 flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
-        <div className="rounded-lg bg-slate-100 p-2 transition-colors group-hover:bg-brand-50">
-          <Icon className="h-4 w-4 text-brand-700" />
-        </div>
+      <div className="mb-2 flex flex-row items-center justify-between space-y-0">
+        <h3 className="text-sm font-medium tracking-tight text-slate-500 transition-colors group-hover:text-brand-700">
+          {title}
+        </h3>
+        <Icon className="h-4 w-4 text-slate-400 transition-colors group-hover:text-brand-600" />
       </div>
-      <p className="relative text-2xl font-bold tracking-tight text-brand-900">{value}</p>
-      {description && (
-        <p className="relative mt-1 text-xs text-slate-500">{description}</p>
-      )}
+      <div>
+        <div className="text-2xl font-bold">{value}</div>
+        {description && (
+          <p className="mt-1 text-xs text-slate-500">{description}</p>
+        )}
+      </div>
     </div>
   );
 }

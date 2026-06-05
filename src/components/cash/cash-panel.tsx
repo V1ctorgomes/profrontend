@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Wallet } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -112,11 +113,12 @@ export function CashPanel() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Caixa"
         description="Fechamento diário comparando valores declarados com vendas do dia"
       />
+      <PageContent>
       {loading ? (
         <div className={loadingClass}>
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -252,6 +254,7 @@ export function CashPanel() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

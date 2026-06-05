@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { BarChart3, Loader2 } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -98,11 +99,12 @@ export function ReportsPanel() {
   }, [load]);
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Relatórios"
         description="Visão consolidada de vendas, estoque e financeiro"
       />
+      <PageContent>
       <div className={`${cardClass} mb-6 flex flex-wrap items-end gap-3 p-5`}>
         <div>
           <label className="mb-1 block text-xs text-slate-500">De</label>
@@ -265,6 +267,7 @@ export function ReportsPanel() {
           )}
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

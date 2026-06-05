@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, Loader2, Plus } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -127,7 +128,7 @@ export function StockPanel() {
   const lowStockCount = overview.filter((p) => p.isLowStock).length;
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Estoque"
         description="Controle de quantidades por tamanho e movimentações"
@@ -140,6 +141,7 @@ export function StockPanel() {
           ) : undefined
         }
       />
+      <PageContent>
 
       {loading ? (
         <div className={loadingClass}>
@@ -367,6 +369,7 @@ export function StockPanel() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

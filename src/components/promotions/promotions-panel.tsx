@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -116,11 +117,12 @@ export function PromotionsPanel() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Promoções"
         description="Gerencie descontos aplicados no PDV"
       />
+      <PageContent>
       {loading ? (
         <div className={loadingClass}>
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -241,6 +243,7 @@ export function PromotionsPanel() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={inter.variable}>
       <body
-        className={`${inter.className} min-h-screen bg-brand-canvas text-brand-ink antialiased`}
+        className={`${inter.className} bg-brand-canvas text-brand-ink antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -206,11 +207,12 @@ export function SalesPanel() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Vendas (PDV)"
         description="Ponto de venda com carrinho, promoções e múltiplos pagamentos"
       />
+      <PageContent>
       {loading ? (
         <div className={loadingClass}>
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -453,6 +455,7 @@ export function SalesPanel() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

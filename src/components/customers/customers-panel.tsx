@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Eye, Loader2, Plus, Search } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -97,11 +98,12 @@ export function CustomersPanel() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Clientes"
         description="Cadastro e histórico de compras dos clientes"
       />
+      <PageContent>
 
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
@@ -294,6 +296,7 @@ export function CustomersPanel() {
           )}
         </div>
       </div>
-    </div>
+      </PageContent>
+    </>
   );
 }

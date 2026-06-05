@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -115,11 +116,12 @@ export function FinancialPanel() {
   }
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Financeiro"
         description="Lançamentos de receitas e despesas administrativas"
       />
+      <PageContent>
       {loading ? (
         <div className={loadingClass}>
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -270,6 +272,7 @@ export function FinancialPanel() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

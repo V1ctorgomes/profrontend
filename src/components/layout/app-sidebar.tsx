@@ -58,10 +58,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
           <Menu className="h-6 w-6" />
         </button>
         <div className="flex min-w-0 max-w-[calc(100vw-7rem)] items-center justify-center gap-2">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-900 text-white">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
             <Shirt className="h-4 w-4" />
           </div>
-          <span className="truncate text-sm font-bold tracking-tight text-brand-900 sm:text-base">
+          <span className="truncate text-sm font-bold tracking-tight text-brand-600 sm:text-base">
             PROGRIFES
           </span>
         </div>
@@ -80,15 +80,12 @@ export function AppSidebar({ user }: AppSidebarProps) {
             className="flex min-w-0 flex-1 items-center gap-2.5 pr-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-900 text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
               <Shirt className="h-5 w-5" />
             </div>
-            <div className="min-w-0">
-              <p className="truncate text-lg font-bold tracking-tight text-brand-900">
-                PROGRIFES
-              </p>
-              <p className="truncate text-[11px] text-slate-500">Gestão de Moda</p>
-            </div>
+            <span className="truncate text-lg font-bold tracking-tight text-brand-600">
+              PROGRIFES
+            </span>
           </Link>
           <button
             type="button"
@@ -169,7 +166,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-brand-950/45 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-brand-950/45 backdrop-blur-sm transition-opacity md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}

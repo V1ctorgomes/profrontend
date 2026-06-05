@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Lock, Mail } from 'lucide-react';
+import { ArrowRight, Loader2, Lock, Mail, ShieldCheck, Shirt } from 'lucide-react';
 import { api } from '@/lib/api';
 import type { LoginResponse } from '@/types/auth';
 import { AUTH_COOKIE, USER_COOKIE } from '@/lib/constants';
-import { btnPrimaryClass, inputClass } from '@/lib/styles';
+import { inputClass } from '@/lib/styles';
 
 function setCookie(name: string, value: string, days = 1) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -49,63 +49,97 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="space-y-1.5">
-        <label htmlFor="email" className="text-sm font-semibold text-brand-900">
-          E-mail
-        </label>
-        <div className="relative">
-          <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            id="email"
-            type="email"
-            placeholder="seu@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`${inputClass} pl-10`}
-            required
-          />
+    <div className="relative flex w-full flex-col justify-center bg-gradient-to-br from-white via-brand-canvas to-brand-50/60 px-8 py-12 sm:px-16 md:px-24 lg:w-1/2 lg:px-32">
+      <div className="mx-auto flex w-full max-w-[420px] flex-col">
+        <div className="mb-10 flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white">
+            <Shirt className="h-6 w-6" />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-brand-950 sm:text-2xl">
+            PROGRIFES
+          </span>
         </div>
-      </div>
 
-      <div className="space-y-1.5">
-        <label htmlFor="password" className="text-sm font-semibold text-brand-900">
-          Senha
-        </label>
-        <div className="relative">
-          <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`${inputClass} pl-10`}
-            required
-          />
+        <div className="mb-6 flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight text-brand-950">
+            Bem-vindo de volta
+          </h1>
+          <p className="text-sm font-medium text-brand-800/80">
+            Insira suas credenciais para acessar o sistema da loja.
+          </p>
         </div>
-      </div>
 
-      {error && (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
-
-      <button
-        type="submit"
-        disabled={loading}
-        className={`${btnPrimaryClass} mt-2 h-11 w-full focus:ring-offset-brand-canvas`}
-      >
-        {loading ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Entrando...
-          </>
-        ) : (
-          'Entrar no sistema'
+        {error && (
+          <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
         )}
-      </button>
-    </form>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-sm font-semibold text-brand-900">
+              E-mail
+            </label>
+            <div className="relative">
+              <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`${inputClass} pl-10`}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="text-sm font-semibold text-brand-900">
+              Senha
+            </label>
+            <div className="relative">
+              <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`${inputClass} pl-10 font-mono placeholder:font-sans`}
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-8 text-sm font-medium text-white transition-all hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 focus:ring-offset-brand-canvas disabled:pointer-events-none disabled:opacity-70"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                A autenticar...
+              </>
+            ) : (
+              <>
+                Entrar no Sistema
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-xs text-slate-500">
+          admin@progrifes.com / admin123 · vendedor@progrifes.com / user123
+        </p>
+
+        <div className="mt-8 flex items-center justify-center gap-2 text-brand-700/50">
+          <ShieldCheck className="h-4 w-4" />
+          <span className="text-xs font-medium">Acesso seguro e encriptado</span>
+        </div>
+      </div>
+    </div>
   );
 }

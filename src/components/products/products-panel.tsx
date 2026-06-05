@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
@@ -181,11 +182,12 @@ export function ProductsPanel() {
   ];
 
   return (
-    <div>
+    <>
       <PageHeader
         title="Produtos"
         description="Cadastro de marcas, categorias e produtos da loja"
       />
+      <PageContent>
 
       <div className="mb-6 flex flex-wrap gap-2">
         {tabs.map((t) => (
@@ -433,6 +435,7 @@ export function ProductsPanel() {
           )}
         </>
       )}
-    </div>
+      </PageContent>
+    </>
   );
 }

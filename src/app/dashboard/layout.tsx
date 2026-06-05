@@ -16,8 +16,8 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-brand-canvas font-sans">
       <AppSidebar user={user} />
-      <main className="no-scrollbar relative h-full flex-1 overflow-y-auto pt-[60px] selection:bg-brand-100 selection:text-brand-900 md:pt-0">
-        <div className="p-6">{children}</div>
+      <main className="no-scrollbar relative flex h-full flex-1 flex-col overflow-hidden overflow-y-auto pt-[60px] selection:bg-brand-100 selection:text-brand-900 md:pt-0">
+        {children}
       </main>
     </div>
   );

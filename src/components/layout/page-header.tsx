@@ -6,16 +6,16 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, action }: PageHeaderProps) {
   return (
-    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <header className="z-10 flex shrink-0 flex-col justify-between gap-6 px-6 pt-8 pb-6 md:px-8 md:pt-10 xl:flex-row xl:items-end">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-brand-900">
+        <h1 className="text-2xl font-bold tracking-tight text-brand-950">
           {title}
         </h1>
         {description && (
-          <p className="mt-1 text-slate-500">{description}</p>
+          <p className="mt-1 text-sm text-slate-500">{description}</p>
         )}
       </div>
       {action}
-    </div>
+    </header>
   );
 }
