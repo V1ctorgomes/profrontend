@@ -38,8 +38,11 @@ export function LoginForm() {
       router.push('/dashboard');
       router.refresh();
     } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Não foi possível entrar no sistema';
       setError(
-        err instanceof Error ? err.message : 'Não foi possível entrar no sistema',
+        msg === 'Credenciais inválidas'
+          ? 'E-mail ou senha incorretos. Use admin@progrifes.com / admin123'
+          : msg,
       );
     } finally {
       setLoading(false);
