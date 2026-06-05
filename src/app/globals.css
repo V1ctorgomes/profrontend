@@ -169,27 +169,3 @@
 .crm-thin-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
-
-@keyframes login-brand-scroll {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-50%);
-  }
-}
-
-.login-brand-marquee {
-  animation: login-brand-scroll var(--marquee-duration, 32s) linear infinite;
-  will-change: transform;
-}
-
-.login-brand-marquee--reverse {
-  animation-direction: reverse;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .login-brand-marquee {
-    animation: none;
-  }
-}
