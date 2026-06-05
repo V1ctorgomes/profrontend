@@ -12,7 +12,7 @@ export function UserDashboard({ metrics }: UserDashboardProps) {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Painel do Dia</h1>
-        <p className="text-muted-foreground">
+        <p className="text-slate-500">
           Acompanhe vendas, estoque e promoções ativas
         </p>
       </div>

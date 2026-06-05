@@ -19,7 +19,7 @@ export function AdminDashboard({ metrics }: AdminDashboardProps) {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Visão Geral</h1>
-        <p className="text-muted-foreground">
+        <p className="text-slate-500">
           Indicadores financeiros e operacionais da loja
         </p>
       </div>

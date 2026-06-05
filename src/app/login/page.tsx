@@ -1,17 +1,9 @@
 import { ShieldCheck, Shirt } from 'lucide-react';
 import { LoginForm } from '@/components/auth/login-form';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen w-full bg-brand-canvas font-sans selection:bg-brand-100 selection:text-brand-900">
-      {/* Painel esquerdo — marca */}
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-brand-900 p-12 text-white lg:flex">
         <div className="pointer-events-none absolute inset-0 opacity-30">
           <div
@@ -32,7 +24,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 space-y-4">
-          <h2 className="text-4xl font-bold leading-tight tracking-tight">
+          <h2 className="text-4xl leading-tight font-bold tracking-tight">
             Gestão inteligente para lojas de moda
           </h2>
           <p className="max-w-md text-sm text-white/70">
@@ -45,7 +37,6 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Painel direito — formulário */}
       <div className="flex w-full flex-col justify-center bg-gradient-to-br from-white via-brand-canvas to-brand-50/60 px-8 py-12 sm:px-16 lg:w-1/2 lg:px-24">
         <div className="mx-auto w-full max-w-[420px]">
           <div className="mb-8 lg:hidden">
@@ -55,24 +46,20 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold tracking-tight text-brand-900">
               PROGRIFES
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              ERP para lojas de moda
-            </p>
+            <p className="mt-1 text-sm text-slate-500">ERP para lojas de moda</p>
           </div>
 
-          <Card className="border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-brand-900">Acessar o sistema</CardTitle>
-              <CardDescription>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-lg font-bold text-brand-900">Acessar o sistema</h2>
+              <p className="mt-1 text-sm text-slate-500">
                 Entre com suas credenciais para gerenciar a loja
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <LoginForm />
-            </CardContent>
-          </Card>
+              </p>
+            </div>
+            <LoginForm />
+          </div>
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
+          <p className="mt-6 text-center text-xs text-slate-500">
             admin@progrifes.com / admin123 · vendedor@progrifes.com / user123
           </p>
 

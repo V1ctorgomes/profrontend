@@ -1,5 +1,4 @@
 import { LucideIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface StatCardProps {
@@ -7,7 +6,6 @@ interface StatCardProps {
   value: string;
   description?: string;
   icon: LucideIcon;
-  trend?: 'up' | 'down' | 'neutral';
   className?: string;
 }
 
@@ -19,28 +17,22 @@ export function StatCard({
   className,
 }: StatCardProps) {
   return (
-    <Card
+    <div
       className={cn(
-        'border-border bg-white shadow-sm transition-all hover:border-brand-200 hover:shadow-md',
+        'rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-brand-200 hover:shadow-md',
         className,
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        <div className="rounded-lg bg-muted p-2">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-sm font-medium text-slate-500">{title}</p>
+        <div className="rounded-lg bg-slate-100 p-2">
           <Icon className="h-4 w-4 text-brand-700" />
         </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-2xl font-bold tracking-tight text-brand-900">
-          {value}
-        </p>
-        {description && (
-          <p className="mt-1 text-xs text-muted-foreground">{description}</p>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+      <p className="text-2xl font-bold tracking-tight text-brand-900">{value}</p>
+      {description && (
+        <p className="mt-1 text-xs text-slate-500">{description}</p>
+      )}
+    </div>
   );
 }
