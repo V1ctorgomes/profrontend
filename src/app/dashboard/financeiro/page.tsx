@@ -1,10 +1,10 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { AdminGuard } from '@/components/layout/admin-guard';
+import { FinancialPanel } from '@/components/financial/financial-panel';
 
 export default function FinanceiroPage() {
   return (
-    <ComingSoon
-      title="Financeiro"
-      description="Entradas, saídas e controle de despesas operacionais"
-    />
+    <AdminGuard>
+      <FinancialPanel />
+    </AdminGuard>
   );
 }

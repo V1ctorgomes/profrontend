@@ -1,10 +1,5 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { CashPanel } from '@/components/cash/cash-panel';
 
 export default function CaixaPage() {
-  return (
-    <ComingSoon
-      title="Fechamento de Caixa"
-      description="Conferência diária de Pix, dinheiro, débito e crédito"
-    />
-  );
+  return <CashPanel />;
 }

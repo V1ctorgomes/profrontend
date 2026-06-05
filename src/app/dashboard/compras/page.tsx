@@ -1,10 +1,5 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { PurchasesPanel } from '@/components/purchases/purchases-panel';
 
 export default function ComprasPage() {
-  return (
-    <ComingSoon
-      title="Compras"
-      description="Registro de compras de fornecedores com entrada automática no estoque"
-    />
-  );
+  return <PurchasesPanel />;
 }

@@ -1,10 +1,10 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { AdminGuard } from '@/components/layout/admin-guard';
+import { ReportsPanel } from '@/components/reports/reports-panel';
 
 export default function RelatoriosPage() {
   return (
-    <ComingSoon
-      title="Relatórios"
-      description="Vendas, estoque e indicadores financeiros gerenciais"
-    />
+    <AdminGuard>
+      <ReportsPanel />
+    </AdminGuard>
   );
 }

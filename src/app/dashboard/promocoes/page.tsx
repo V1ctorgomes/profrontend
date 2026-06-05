@@ -1,10 +1,5 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { PromotionsPanel } from '@/components/promotions/promotions-panel';
 
 export default function PromocoesPage() {
-  return (
-    <ComingSoon
-      title="Promoções"
-      description="Campanhas percentuais, valor fixo, leve X pague Y e por categoria/marca"
-    />
-  );
+  return <PromotionsPanel />;
 }

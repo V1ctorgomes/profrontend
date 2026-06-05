@@ -1,10 +1,10 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { AdminGuard } from '@/components/layout/admin-guard';
+import { UsersPanel } from '@/components/users/users-panel';
 
 export default function UsuariosPage() {
   return (
-    <ComingSoon
-      title="Usuários"
-      description="Gestão de perfis ADMIN e USER com controle de permissões"
-    />
+    <AdminGuard>
+      <UsersPanel />
+    </AdminGuard>
   );
 }
