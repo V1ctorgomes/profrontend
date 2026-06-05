@@ -25,8 +25,9 @@ export interface CustomerDetail extends Omit<Customer, 'salesCount'> {
       id: string;
       size: string;
       quantity: number;
-      unitPrice: number;
-      total: number;
+    unitPrice: number;
+    unitCost: number;
+    total: number;
       product: {
         id: string;
         model: string;

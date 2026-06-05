@@ -17,6 +17,8 @@ interface SalesReport {
     totalDiscount: number;
     salesCount: number;
     averageTicket: number;
+    costOfGoodsSold: number;
+    grossProfit: number;
   };
   recentSales: {
     id: string;
@@ -56,6 +58,7 @@ interface FinancialReport {
   salesCount: number;
   purchasesTotal: number;
   purchasesCount: number;
+  costOfGoodsSold: number;
   manualIncome: number;
   manualExpense: number;
   expensesByCategory: Record<string, number>;
@@ -145,7 +148,7 @@ export function ReportsPanel() {
                 <BarChart3 className="h-5 w-5" />
                 Vendas
               </h2>
-              <div className="mb-4 grid gap-3 sm:grid-cols-4">
+              <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                 <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Quantidade</p>
                   <p className="text-xl font-semibold">{sales.summary.salesCount}</p>
@@ -160,6 +163,18 @@ export function ReportsPanel() {
                   <p className="text-xs text-slate-500">Descontos</p>
                   <p className="text-xl font-semibold">
                     {formatCurrency(sales.summary.totalDiscount)}
+                  </p>
+                </div>
+                <div className={metricBoxClass}>
+                  <p className="text-xs text-slate-500">Custo vendido</p>
+                  <p className="text-xl font-semibold">
+                    {formatCurrency(sales.summary.costOfGoodsSold)}
+                  </p>
+                </div>
+                <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
+                  <p className="text-xs text-brand-600">Lucro bruto</p>
+                  <p className="text-xl font-semibold text-brand-900">
+                    {formatCurrency(sales.summary.grossProfit)}
                   </p>
                 </div>
                 <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
@@ -237,15 +252,21 @@ export function ReportsPanel() {
           {financial && (
             <div className={`${cardClass} p-5`}>
               <h2 className="mb-4 font-semibold text-brand-900">Financeiro</h2>
-              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 <div className={`rounded-lg bg-green-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-green-600">Receita vendas</p>
                   <p className="text-xl font-semibold text-green-700">
                     {formatCurrency(financial.salesRevenue)}
                   </p>
                 </div>
+                <div className={metricBoxClass}>
+                  <p className="text-xs text-slate-500">Custo vendido</p>
+                  <p className="text-xl font-semibold">
+                    {formatCurrency(financial.costOfGoodsSold)}
+                  </p>
+                </div>
                 <div className={`rounded-lg bg-red-50 px-4 py-3 ${boxEffects}`}>
-                  <p className="text-xs text-red-500">Compras</p>
+                  <p className="text-xs text-red-500">Compras (estoque)</p>
                   <p className="text-xl font-semibold text-red-600">
                     {formatCurrency(financial.purchasesTotal)}
                   </p>
