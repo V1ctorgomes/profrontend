@@ -1,4 +1,4 @@
-import { ProgrifesBrand } from '@/components/brand/progrifes-logo';
+import { Shirt } from 'lucide-react';
 
 export function LoginBanner() {
   return (
@@ -26,8 +26,8 @@ export function LoginBanner() {
       />
 
       <div className="relative z-10 flex max-w-2xl flex-col p-16">
-        <div className="mb-8">
-          <ProgrifesBrand size="banner" showText={false} priority />
+        <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl border border-highlight/35 bg-brand-800/50 shadow-2xl shadow-brand-950/50 backdrop-blur-md">
+          <Shirt className="h-8 w-8 text-highlight" strokeWidth={1.5} />
         </div>
 
         <h2 className="mb-6 text-4xl leading-tight font-bold text-white drop-shadow-sm">

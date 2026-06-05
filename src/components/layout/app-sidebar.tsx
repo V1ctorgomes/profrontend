@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LogOut, Menu, X } from 'lucide-react';
-import { ProgrifesBrand } from '@/components/brand/progrifes-logo';
+import { LogOut, Menu, Shirt, X } from 'lucide-react';
 import { getNavigationForRole } from '@/config/navigation';
 import { AUTH_COOKIE, USER_COOKIE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -58,8 +57,13 @@ export function AppSidebar({ user }: AppSidebarProps) {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex min-w-0 max-w-[calc(100vw-7rem)] items-center justify-center">
-          <ProgrifesBrand size="sm" />
+        <div className="flex min-w-0 max-w-[calc(100vw-7rem)] items-center justify-center gap-2">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+            <Shirt className="h-4 w-4" />
+          </div>
+          <span className="truncate text-sm font-bold tracking-tight text-brand-600 sm:text-base">
+            PRO GRIFES
+          </span>
         </div>
         <div className="w-10 shrink-0" aria-hidden />
       </div>
@@ -73,10 +77,15 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <div className="flex h-[60px] shrink-0 items-center justify-between border-b border-slate-100 px-6 md:h-[88px]">
           <Link
             href="/dashboard"
-            className="flex min-w-0 flex-1 items-center pr-2"
+            className="flex min-w-0 flex-1 items-center gap-2.5 pr-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            <ProgrifesBrand size="md" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+              <Shirt className="h-5 w-5" />
+            </div>
+            <span className="truncate text-lg font-bold tracking-tight text-brand-600">
+              PRO GRIFES
+            </span>
           </Link>
           <button
             type="button"
