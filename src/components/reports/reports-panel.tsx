@@ -55,6 +55,7 @@ interface StockReport {
 
 interface FinancialReport {
   salesRevenue: number;
+  totalRevenue: number;
   salesCount: number;
   purchasesTotal: number;
   purchasesCount: number;
@@ -172,7 +173,7 @@ export function ReportsPanel() {
                   </p>
                 </div>
                 <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
-                  <p className="text-xs text-brand-600">Lucro bruto</p>
+                  <p className="text-xs text-brand-600">Lucro bruto (vendas)</p>
                   <p className="text-xl font-semibold text-brand-900">
                     {formatCurrency(sales.summary.grossProfit)}
                   </p>
@@ -252,23 +253,29 @@ export function ReportsPanel() {
           {financial && (
             <div className={`${cardClass} p-5`}>
               <h2 className="mb-4 font-semibold text-brand-900">Financeiro</h2>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                 <div className={`rounded-lg bg-green-50 px-4 py-3 ${boxEffects}`}>
                   <p className="text-xs text-green-600">Receita vendas</p>
                   <p className="text-xl font-semibold text-green-700">
                     {formatCurrency(financial.salesRevenue)}
                   </p>
                 </div>
+                <div className={`rounded-lg bg-emerald-50 px-4 py-3 ${boxEffects}`}>
+                  <p className="text-xs text-emerald-600">Outras receitas</p>
+                  <p className="text-xl font-semibold text-emerald-700">
+                    {formatCurrency(financial.manualIncome)}
+                  </p>
+                </div>
+                <div className={`rounded-lg bg-green-50 px-4 py-3 ${boxEffects}`}>
+                  <p className="text-xs text-green-700">Receita total</p>
+                  <p className="text-xl font-semibold text-green-800">
+                    {formatCurrency(financial.totalRevenue)}
+                  </p>
+                </div>
                 <div className={metricBoxClass}>
                   <p className="text-xs text-slate-500">Custo vendido</p>
                   <p className="text-xl font-semibold">
                     {formatCurrency(financial.costOfGoodsSold)}
-                  </p>
-                </div>
-                <div className={`rounded-lg bg-red-50 px-4 py-3 ${boxEffects}`}>
-                  <p className="text-xs text-red-500">Compras (estoque)</p>
-                  <p className="text-xl font-semibold text-red-600">
-                    {formatCurrency(financial.purchasesTotal)}
                   </p>
                 </div>
                 <div className={metricBoxClass}>
@@ -282,7 +289,14 @@ export function ReportsPanel() {
                   <p className="text-xl font-semibold text-brand-900">
                     {formatCurrency(financial.estimatedProfit)}
                   </p>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Vendas + outras receitas − custo − despesas
+                  </p>
                 </div>
+              </div>
+              <div className={`mt-4 rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-500 ${boxEffects}`}>
+                Compras de estoque ({formatCurrency(financial.purchasesTotal)}) não entram no
+                lucro — são investimento em mercadoria.
               </div>
             </div>
           )}
