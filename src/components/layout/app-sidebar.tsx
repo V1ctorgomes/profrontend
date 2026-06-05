@@ -11,10 +11,11 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { getNavigationForRole } from '@/config/navigation';
+import { cn } from '@/lib/utils';
 import type { User } from '@/types/auth';
 
 interface AppSidebarProps {
@@ -22,13 +23,20 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ user }: AppSidebarProps) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
+  const { isMobile, setOpenMobile } = useSidebar();
   const items = getNavigationForRole(user.role);
+
+  function handleNavClick() {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  }
 
   return (
     <Sidebar className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/dashboard" className="flex items-center gap-3" onClick={handleNavClick}>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-900 text-white">
             <span className="text-sm font-black">PG</span>
           </div>
@@ -47,6 +55,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
+                const Icon = item.icon;
                 const isActive =
                   pathname === item.href ||
                   (item.href !== '/dashboard' &&
@@ -54,14 +63,19 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      render={<Link href={item.href} />}
-                      isActive={isActive}
-                      tooltip={item.title}
+                    <Link
+                      href={item.href}
+                      onClick={handleNavClick}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-md p-2 text-sm transition-colors',
+                        isActive
+                          ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
+                          : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                      )}
                     >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
+                      <Icon className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{item.title}</span>
+                    </Link>
                   </SidebarMenuItem>
                 );
               })}

@@ -24,14 +24,19 @@ function clearCookie(name: string) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
 }
 
-export function AppHeader({ user }: AppHeaderProps) {
-  const router = useRouter();
-  const initials = user.name
-    .split(' ')
-    .map((n) => n[0])
+function getInitials(name?: string, email?: string): string {
+  const source = (name || email || '?').trim();
+  return source
+    .split(/\s+/)
+    .map((part) => part[0])
     .join('')
     .slice(0, 2)
     .toUpperCase();
+}
+
+export function AppHeader({ user }: AppHeaderProps) {
+  const router = useRouter();
+  const initials = getInitials(user.name, user.email);
 
   function handleLogout() {
     clearCookie(AUTH_COOKIE);
@@ -55,16 +60,20 @@ export function AppHeader({ user }: AppHeaderProps) {
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="ghost" className="h-9 gap-2 px-2">
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-brand-900 text-white text-xs">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <span className="hidden text-sm md:inline">{user.name}</span>
-            </Button>
+            <Button
+              variant="ghost"
+              className="h-9 gap-2 px-2"
+              type="button"
+            />
           }
-        />
+        >
+          <Avatar className="h-7 w-7">
+            <AvatarFallback className="bg-brand-900 text-white text-xs">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <span className="hidden text-sm md:inline">{user.name}</span>
+        </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuLabel>
             <p>{user.name}</p>
@@ -73,12 +82,16 @@ export function AppHeader({ user }: AppHeaderProps) {
             </p>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem disabled>
             <User className="mr-2 h-4 w-4" />
             Meu perfil
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={handleLogout}
+            closeOnClick
+          >
             <LogOut className="mr-2 h-4 w-4" />
             Sair
           </DropdownMenuItem>
