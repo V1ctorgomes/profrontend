@@ -220,21 +220,10 @@ export function PurchasesPanel() {
                 Novo fornecedor
               </button>
             ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTab('suppliers');
-                  }}
-                  className={btnSecondaryClass}
-                >
-                  Gerenciar fornecedores
-                </button>
-                <button type="button" onClick={openPurchaseModal} className={btnPrimaryClass}>
-                  <Plus className="h-4 w-4" />
-                  Nova compra
-                </button>
-              </>
+              <button type="button" onClick={openPurchaseModal} className={btnPrimaryClass}>
+                <Plus className="h-4 w-4" />
+                Nova compra
+              </button>
             )}
           </div>
         }
