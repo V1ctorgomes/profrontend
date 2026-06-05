@@ -25,6 +25,7 @@ import { formatCurrency } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import {
   btnDangerClass,
+  btnPrimaryClass,
   cardClass,
   inputClass,
   loadingClass,
@@ -453,12 +454,12 @@ export function SalesPanel() {
                 </div>
 
                 <div className={`${cardClass} flex min-h-[320px] flex-1 flex-col overflow-hidden`}>
-                  <div className="flex items-center justify-between border-b border-slate-200 bg-brand-900 px-5 py-3 text-white">
-                    <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide uppercase">
+                  <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-3">
+                    <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-brand-900 uppercase">
                       <Receipt className="h-4 w-4" />
                       Carrinho
                     </h2>
-                    <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-bold">
+                    <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-bold text-brand-800">
                       {cartCount} {cartCount === 1 ? 'item' : 'itens'}
                     </span>
                   </div>
@@ -525,22 +526,22 @@ export function SalesPanel() {
               {/* Coluna direita — checkout PDV */}
               <form
                 onSubmit={handleSale}
-                className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-brand-950 text-white shadow-lg"
+                className={`${cardClass} flex flex-col overflow-hidden`}
               >
-                <div className="border-b border-white/10 px-5 py-4">
-                  <p className="text-xs font-medium tracking-widest text-white/50 uppercase">
+                <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
+                  <p className="text-xs font-medium tracking-widest text-slate-500 uppercase">
                     Total da venda
                   </p>
-                  <p className="mt-1 text-4xl font-bold tracking-tight tabular-nums">
+                  <p className="mt-1 text-4xl font-bold tracking-tight text-brand-900 tabular-nums">
                     {formatCurrency(total)}
                   </p>
-                  <div className="mt-3 space-y-1 text-sm text-white/70">
+                  <div className="mt-3 space-y-1 text-sm text-slate-600">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
                       <span>{formatCurrency(subtotal)}</span>
                     </div>
                     {discount > 0 && (
-                      <div className="flex justify-between text-emerald-400">
+                      <div className="flex justify-between text-emerald-600">
                         <span>Desconto</span>
                         <span>- {formatCurrency(discount)}</span>
                       </div>
@@ -548,22 +549,20 @@ export function SalesPanel() {
                   </div>
                 </div>
 
-                <div className="flex flex-1 flex-col gap-4 p-5">
+                <div className="flex flex-1 flex-col gap-4 bg-white p-5">
                   <div>
-                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/60 uppercase">
+                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase">
                       <User className="h-3.5 w-3.5" />
                       Cliente
                     </label>
                     <select
-                      className="h-11 w-full rounded-lg border border-white/10 bg-white/10 px-3 text-sm text-white outline-none focus:border-white/30 focus:ring-2 focus:ring-white/20"
+                      className={selectClass}
                       value={customerId}
                       onChange={(e) => setCustomerId(e.target.value)}
                     >
-                      <option value="" className="text-brand-900">
-                        Consumidor final
-                      </option>
+                      <option value="">Consumidor final</option>
                       {customers.map((c) => (
-                        <option key={c.id} value={c.id} className="text-brand-900">
+                        <option key={c.id} value={c.id}>
                           {c.name}
                         </option>
                       ))}
@@ -571,20 +570,18 @@ export function SalesPanel() {
                   </div>
 
                   <div>
-                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-white/60 uppercase">
+                    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase">
                       <Tag className="h-3.5 w-3.5" />
                       Promoção
                     </label>
                     <select
-                      className="h-11 w-full rounded-lg border border-white/10 bg-white/10 px-3 text-sm text-white outline-none focus:border-white/30 focus:ring-2 focus:ring-white/20"
+                      className={selectClass}
                       value={promotionId}
                       onChange={(e) => setPromotionId(e.target.value)}
                     >
-                      <option value="" className="text-brand-900">
-                        Sem promoção
-                      </option>
+                      <option value="">Sem promoção</option>
                       {promotions.map((p) => (
-                        <option key={p.id} value={p.id} className="text-brand-900">
+                        <option key={p.id} value={p.id}>
                           {p.name} (
                           {p.type === 'PERCENTAGE' ? `${p.value}%` : formatCurrency(p.value)})
                         </option>
@@ -594,13 +591,13 @@ export function SalesPanel() {
 
                   <div>
                     <div className="mb-2 flex items-center justify-between">
-                      <p className="text-xs font-semibold tracking-wide text-white/60 uppercase">
+                      <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
                         Pagamento
                       </p>
                       <button
                         type="button"
                         onClick={fillPaymentTotal}
-                        className="text-xs font-medium text-white/70 underline-offset-2 hover:text-white hover:underline"
+                        className="text-xs font-medium text-brand-600 underline-offset-2 hover:underline"
                       >
                         Usar total
                       </button>
@@ -623,8 +620,8 @@ export function SalesPanel() {
                             className={cn(
                               'flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-xs font-semibold transition-all',
                               active
-                                ? 'border-white bg-white text-brand-900'
-                                : 'border-white/15 bg-white/5 text-white/80 hover:bg-white/10',
+                                ? 'border-brand-900 bg-brand-900 text-white shadow-sm'
+                                : 'border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50',
                             )}
                           >
                             <Icon className="h-4 w-4" />
@@ -637,7 +634,7 @@ export function SalesPanel() {
                     {payments.map((pay, idx) => (
                       <div key={idx} className="mb-2 flex gap-2">
                         <input
-                          className="h-12 flex-1 rounded-lg border border-white/10 bg-white px-3 text-lg font-bold text-brand-900 outline-none focus:ring-2 focus:ring-white/30"
+                          className={`${inputClass} text-lg font-bold`}
                           type="number"
                           step="0.01"
                           min="0"
@@ -655,7 +652,7 @@ export function SalesPanel() {
                             onClick={() =>
                               setPayments((p) => p.filter((_, i) => i !== idx))
                             }
-                            className="flex h-12 w-12 items-center justify-center rounded-lg border border-white/15 text-red-300 hover:bg-white/10"
+                            className={btnDangerClass}
                           >
                             <Minus className="h-4 w-4" />
                           </button>
@@ -668,18 +665,18 @@ export function SalesPanel() {
                       onClick={() =>
                         setPayments((p) => [...p, { method: 'PIX', amount: '' }])
                       }
-                      className="mt-1 text-xs font-medium text-white/60 hover:text-white"
+                      className="mt-1 text-xs font-medium text-slate-500 hover:text-brand-900"
                     >
                       + Dividir pagamento
                     </button>
                   </div>
                 </div>
 
-                <div className="border-t border-white/10 p-5">
+                <div className="border-t border-slate-200 bg-white p-5">
                   <button
                     type="submit"
                     disabled={submitting || cart.length === 0}
-                    className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 text-base font-bold text-white shadow-lg transition-all hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+                    className={`${btnPrimaryClass} h-14 w-full rounded-xl text-base font-bold`}
                   >
                     {submitting ? (
                       <>
