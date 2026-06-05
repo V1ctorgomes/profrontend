@@ -62,6 +62,8 @@ interface FinancialReport {
   costOfGoodsSold: number;
   manualIncome: number;
   manualExpense: number;
+  purchaseExpense: number;
+  operatingExpense: number;
   expensesByCategory: Record<string, number>;
   estimatedProfit: number;
 }
@@ -279,9 +281,12 @@ export function ReportsPanel() {
                   </p>
                 </div>
                 <div className={metricBoxClass}>
-                  <p className="text-xs text-slate-500">Despesas manuais</p>
+                  <p className="text-xs text-slate-500">Despesas (total)</p>
                   <p className="text-xl font-semibold">
                     {formatCurrency(financial.manualExpense)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Compras: {formatCurrency(financial.purchaseExpense)}
                   </p>
                 </div>
                 <div className={`rounded-lg bg-brand-50 px-4 py-3 ${boxEffects}`}>
@@ -290,13 +295,14 @@ export function ReportsPanel() {
                     {formatCurrency(financial.estimatedProfit)}
                   </p>
                   <p className="mt-1 text-[11px] text-slate-500">
-                    Vendas + outras receitas − custo − despesas
+                    Vendas + outras receitas − custo vendido − despesas operacionais
                   </p>
                 </div>
               </div>
               <div className={`mt-4 rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-500 ${boxEffects}`}>
-                Compras de estoque ({formatCurrency(financial.purchasesTotal)}) não entram no
-                lucro — são investimento em mercadoria.
+                Compras de estoque entram automaticamente em Despesas (categoria Compras) no
+                Financeiro. No lucro estimado, o custo da mercadoria já entra via{' '}
+                <strong>custo vendido</strong> — por isso compras não reduzem o lucro duas vezes.
               </div>
             </div>
           )}

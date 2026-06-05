@@ -29,6 +29,7 @@ interface FinancialEntry {
   description: string;
   amount: number;
   date: string;
+  purchaseId?: string | null;
 }
 
 interface Summary {
@@ -208,16 +209,20 @@ export function FinancialPanel() {
                       <td className="px-4 py-3">{e.category}</td>
                       <td className="px-4 py-3">{e.description}</td>
                       <td className="px-4 py-3 font-medium">
-                        {formatCurrency(e.amount)}
+                        {formatCurrency(Math.abs(e.amount))}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(e.id)}
-                          className={btnDangerClass}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {e.purchaseId ? (
+                          <span className="text-xs text-slate-400">Automática</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(e.id)}
+                            className={btnDangerClass}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
