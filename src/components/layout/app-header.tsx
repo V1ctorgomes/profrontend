@@ -41,7 +41,7 @@ export function AppHeader({ user }: AppHeaderProps) {
   }
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-white/10 bg-background/80 px-4 backdrop-blur-md">
+    <header className="flex h-14 items-center justify-between border-b border-border bg-white px-4 shadow-sm">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
         <div className="hidden sm:block">
@@ -57,7 +57,7 @@ export function AppHeader({ user }: AppHeaderProps) {
           render={
             <Button variant="ghost" className="h-9 gap-2 px-2">
               <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-white text-black text-xs">
+                <AvatarFallback className="bg-brand-900 text-white text-xs">
                   {initials}
                 </AvatarFallback>
               </Avatar>

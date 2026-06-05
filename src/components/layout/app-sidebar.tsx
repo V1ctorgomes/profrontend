@@ -26,14 +26,16 @@ export function AppSidebar({ user }: AppSidebarProps) {
   const items = getNavigationForRole(user.role);
 
   return (
-    <Sidebar className="border-r border-white/10">
-      <SidebarHeader className="border-b border-white/10 px-4 py-5">
+    <Sidebar className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-black">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-900 text-white">
             <span className="text-sm font-black">PG</span>
           </div>
           <div>
-            <p className="text-sm font-bold tracking-wide">PROGRIFES</p>
+            <p className="text-sm font-bold tracking-tight text-brand-900">
+              PROGRIFES
+            </p>
             <p className="text-xs text-muted-foreground">Gestão de Moda</p>
           </div>
         </Link>
@@ -68,8 +70,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-white/10 p-4">
-        <div className="rounded-lg bg-white/5 px-3 py-2">
+      <SidebarFooter className="border-t border-sidebar-border p-4">
+        <div className="rounded-lg bg-muted px-3 py-2">
           <p className="text-sm font-medium">{user.name}</p>
           <p className="text-xs text-muted-foreground">
             {user.role === 'ADMIN' ? 'Administrador' : 'Operador'}

@@ -14,9 +14,9 @@ export function ComingSoon({ title, description }: ComingSoonProps) {
         <p className="text-muted-foreground">{description}</p>
       </div>
 
-      <Card className="border-dashed border-white/20 bg-card/40">
+      <Card className="border-dashed border-border bg-white">
         <CardContent className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-          <div className="rounded-full bg-white/10 p-4">
+          <div className="rounded-full bg-muted p-4">
             <Construction className="h-8 w-8 text-muted-foreground" />
           </div>
           <div>

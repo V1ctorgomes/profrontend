@@ -1,51 +1,86 @@
-import { Shirt } from 'lucide-react';
+import { ShieldCheck, Shirt } from 'lucide-react';
 import { LoginForm } from '@/components/auth/login-form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export default function LoginPage() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black p-4">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-32 top-0 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-        <div className="absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)',
-            backgroundSize: '32px 32px',
-          }}
-        />
-      </div>
+    <div className="flex min-h-screen w-full bg-brand-canvas font-sans selection:bg-brand-100 selection:text-brand-900">
+      {/* Painel esquerdo — marca */}
+      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-brand-900 p-12 text-white lg:flex">
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)',
+              backgroundSize: '28px 28px',
+            }}
+          />
+        </div>
 
-      <div className="relative z-10 w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-black shadow-2xl shadow-white/10">
-            <Shirt className="h-7 w-7" />
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-brand-900">
+            <Shirt className="h-5 w-5" />
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-white">
-            PROGRIFES
-          </h1>
-          <p className="mt-2 text-sm text-white/60">
-            ERP inteligente para lojas de moda
+          <span className="text-lg font-bold tracking-tight">PROGRIFES</span>
+        </div>
+
+        <div className="relative z-10 space-y-4">
+          <h2 className="text-4xl font-bold leading-tight tracking-tight">
+            Gestão inteligente para lojas de moda
+          </h2>
+          <p className="max-w-md text-sm text-white/70">
+            Controle estoque, vendas, clientes e financeiro em um único sistema.
           </p>
         </div>
 
-        <Card className="border-white/10 bg-white/5 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="text-white">Acessar o sistema</CardTitle>
-            <CardDescription>
-              Entre com suas credenciais para gerenciar a loja
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <LoginForm />
-          </CardContent>
-        </Card>
-
-        <p className="mt-6 text-center text-xs text-white/40">
-          admin@progrifes.com / admin123 · vendedor@progrifes.com / user123
+        <p className="relative z-10 text-xs text-white/40">
+          © {new Date().getFullYear()} Progrifes ERP
         </p>
+      </div>
+
+      {/* Painel direito — formulário */}
+      <div className="flex w-full flex-col justify-center bg-gradient-to-br from-white via-brand-canvas to-brand-50/60 px-8 py-12 sm:px-16 lg:w-1/2 lg:px-24">
+        <div className="mx-auto w-full max-w-[420px]">
+          <div className="mb-8 lg:hidden">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-900 text-white">
+              <Shirt className="h-6 w-6" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-brand-900">
+              PROGRIFES
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              ERP para lojas de moda
+            </p>
+          </div>
+
+          <Card className="border-border shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-brand-900">Acessar o sistema</CardTitle>
+              <CardDescription>
+                Entre com suas credenciais para gerenciar a loja
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <LoginForm />
+            </CardContent>
+          </Card>
+
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            admin@progrifes.com / admin123 · vendedor@progrifes.com / user123
+          </p>
+
+          <div className="mt-8 flex items-center justify-center gap-2 text-brand-700/50">
+            <ShieldCheck className="h-4 w-4" />
+            <span className="text-xs font-medium">Acesso seguro e encriptado</span>
+          </div>
+        </div>
       </div>
     </div>
   );

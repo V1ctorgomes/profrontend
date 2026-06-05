@@ -4,8 +4,8 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import './globals.css';
 
 const inter = Inter({
-  variable: '--font-sans',
   subsets: ['latin'],
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
@@ -20,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="dark">
-      <body className={`${inter.variable} min-h-screen antialiased`}>
+    <html lang="pt-BR" className={inter.variable}>
+      <body
+        className={`${inter.className} min-h-screen bg-brand-canvas text-brand-ink antialiased`}
+      >
         <TooltipProvider>{children}</TooltipProvider>
       </body>
     </html>

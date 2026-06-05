@@ -18,7 +18,7 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar user={user} />
-      <SidebarInset className="bg-background">
+      <SidebarInset className="bg-brand-canvas">
         <AppHeader user={user} />
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>
