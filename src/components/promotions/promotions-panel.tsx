@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import {
@@ -10,8 +11,10 @@ import {
   btnPrimaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   selectClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 
 interface Promotion {
@@ -30,8 +33,8 @@ const typeLabels: Record<Promotion['type'], string> = {
 };
 
 export function PromotionsPanel() {
+  const { toast, fail, confirmDelete } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [form, setForm] = useState({
     name: '',
@@ -43,18 +46,17 @@ export function PromotionsPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const data = await api<Promotion[]>('/promotions', {
         token: getClientToken(),
       });
       setPromotions(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar');
+      fail('Erro ao carregar', err, 'Erro ao carregar');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -74,10 +76,12 @@ export function PromotionsPanel() {
           endDate: form.endDate,
         }),
       });
+      const name = form.name;
       setForm({ name: '', type: 'PERCENTAGE', value: '', startDate: '', endDate: '' });
+      toast.success('Promoção criada', `"${name}" foi adicionada.`);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar promoção');
+      fail('Erro ao criar promoção', err, 'Erro ao criar promoção');
     }
   }
 
@@ -88,39 +92,39 @@ export function PromotionsPanel() {
         token: getClientToken(),
         body: JSON.stringify({ active: !active }),
       });
+      toast.success(
+        active ? 'Promoção desativada' : 'Promoção ativada',
+      );
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao atualizar');
+      fail('Erro ao atualizar', err, 'Erro ao atualizar');
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Excluir esta promoção?')) return;
+    if (!(await confirmDelete('Excluir promoção?', 'Esta promoção será removida permanentemente.'))) return;
     try {
       await api(`/promotions/${id}`, {
         method: 'DELETE',
         token: getClientToken(),
       });
+      toast.success('Promoção excluída');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir');
+      fail('Erro ao excluir', err, 'Erro ao excluir');
     }
   }
 
   return (
     <div>
       <PageHeader
+        badge="PDV"
         title="Promoções"
         description="Gerencie descontos aplicados no PDV"
       />
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
       {loading ? (
-        <div className="flex justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -187,7 +191,7 @@ export function PromotionsPanel() {
           </form>
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Nome</th>
                   <th className="px-4 py-3">Tipo</th>

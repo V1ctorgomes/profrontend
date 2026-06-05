@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { getClientUser } from '@/lib/client-auth';
+import { loadingClass } from '@/lib/styles';
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -20,8 +21,8 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
 
   if (!allowed) {
     return (
-      <div className="flex items-center justify-center py-16 text-slate-500">
-        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+      <div className={loadingClass}>
+        <Loader2 className="h-5 w-5 animate-spin" />
         Verificando permissão...
       </div>
     );

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Wallet } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
@@ -10,7 +11,9 @@ import {
   btnPrimaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 
 interface ExpectedCash {
@@ -40,8 +43,8 @@ const fields = [
 ];
 
 export function CashPanel() {
+  const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [expected, setExpected] = useState<ExpectedCash | null>(null);
   const [closings, setClosings] = useState<CashClosing[]>([]);
   const [form, setForm] = useState({
@@ -55,7 +58,6 @@ export function CashPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const [exp, list] = await Promise.all([
@@ -65,11 +67,11 @@ export function CashPanel() {
       setExpected(exp);
       setClosings(list);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar');
+      fail('Erro ao carregar', err, 'Erro ao carregar');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -78,7 +80,6 @@ export function CashPanel() {
   async function handleClose(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    setError('');
     try {
       await api('/cash-closings', {
         method: 'POST',
@@ -99,9 +100,10 @@ export function CashPanel() {
         informedCredit: '',
         notes: '',
       });
+      toast.success('Caixa fechado', 'Fechamento registrado com sucesso.');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fechar caixa');
+      fail('Erro ao fechar caixa', err, 'Erro ao fechar caixa');
     } finally {
       setSubmitting(false);
     }
@@ -110,17 +112,13 @@ export function CashPanel() {
   return (
     <div>
       <PageHeader
+        badge="Financeiro"
         title="Caixa"
         description="Fechamento diário comparando valores declarados com vendas do dia"
       />
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
       {loading ? (
-        <div className="flex justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -205,7 +203,7 @@ export function CashPanel() {
           </form>
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Status</th>

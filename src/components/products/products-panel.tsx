@@ -3,15 +3,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import {
   btnDangerClass,
   btnPrimaryClass,
   cardClass,
+  cardHeaderClass,
   inputClass,
+  loadingClass,
   selectClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 import { formatCurrency } from '@/lib/format';
 import type { Brand, Category, Product } from '@/types/catalog';
@@ -19,9 +23,9 @@ import type { Brand, Category, Product } from '@/types/catalog';
 type Tab = 'products' | 'brands' | 'categories';
 
 export function ProductsPanel() {
+  const { toast, fail, confirmDelete } = usePanelFeedback();
   const [tab, setTab] = useState<Tab>('products');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -39,7 +43,6 @@ export function ProductsPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const [b, c, p] = await Promise.all([
@@ -56,11 +59,15 @@ export function ProductsPanel() {
         categoryId: f.categoryId || c[0]?.id || '',
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      fail(
+        'Erro ao carregar',
+        err,
+        'Não foi possível carregar os dados',
+      );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -69,48 +76,54 @@ export function ProductsPanel() {
   async function handleCreateBrand(e: React.FormEvent) {
     e.preventDefault();
     try {
+      const name = brandName;
       await api('/brands', {
         method: 'POST',
         token: getClientToken(),
-        body: JSON.stringify({ name: brandName }),
+        body: JSON.stringify({ name }),
       });
       setBrandName('');
+      toast.success('Marca criada', `"${name}" foi adicionada ao catálogo.`);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar marca');
+      fail('Erro ao criar marca', err, 'Tente novamente.');
     }
   }
 
   async function handleCreateCategory(e: React.FormEvent) {
     e.preventDefault();
     try {
+      const name = categoryName;
       await api('/categories', {
         method: 'POST',
         token: getClientToken(),
-        body: JSON.stringify({ name: categoryName }),
+        body: JSON.stringify({ name }),
       });
+      toast.success('Categoria criada', `"${name}" foi adicionada.`);
       setCategoryName('');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar categoria');
+      fail('Erro ao criar categoria', err, 'Tente novamente.');
     }
   }
 
   async function handleCreateProduct(e: React.FormEvent) {
     e.preventDefault();
     try {
+      const model = productForm.model;
       await api('/products', {
         method: 'POST',
         token: getClientToken(),
         body: JSON.stringify({
           brandId: productForm.brandId,
           categoryId: productForm.categoryId,
-          model: productForm.model,
+          model,
           costPrice: Number(productForm.costPrice),
           salePrice: Number(productForm.salePrice),
           minStock: Number(productForm.minStock),
         }),
       });
+      toast.success('Produto criado', `${model} cadastrado com sucesso.`);
       setProductForm((f) => ({
         ...f,
         model: '',
@@ -120,40 +133,43 @@ export function ProductsPanel() {
       }));
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar produto');
+      fail('Erro ao criar produto', err, 'Tente novamente.');
     }
   }
 
-  async function handleDeleteBrand(id: string) {
-    if (!confirm('Excluir esta marca?')) return;
+  async function handleDeleteBrand(id: string, name: string) {
+    if (!(await confirmDelete('Excluir marca?', `"${name}" será removida permanentemente.`))) return;
     try {
       await api(`/brands/${id}`, { method: 'DELETE', token: getClientToken() });
+      toast.success('Marca excluída');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir marca');
+      fail('Erro ao excluir marca', err, 'Tente novamente.');
     }
   }
 
-  async function handleDeleteCategory(id: string) {
-    if (!confirm('Excluir esta categoria?')) return;
+  async function handleDeleteCategory(id: string, name: string) {
+    if (!(await confirmDelete('Excluir categoria?', `"${name}" será removida permanentemente.`))) return;
     try {
       await api(`/categories/${id}`, {
         method: 'DELETE',
         token: getClientToken(),
       });
+      toast.success('Categoria excluída');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir categoria');
+      fail('Erro ao excluir categoria', err, 'Tente novamente.');
     }
   }
 
-  async function handleDeleteProduct(id: string) {
-    if (!confirm('Excluir este produto?')) return;
+  async function handleDeleteProduct(id: string, model: string) {
+    if (!(await confirmDelete('Excluir produto?', `"${model}" será removido do catálogo.`))) return;
     try {
       await api(`/products/${id}`, { method: 'DELETE', token: getClientToken() });
+      toast.success('Produto excluído');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir produto');
+      fail('Erro ao excluir produto', err, 'Tente novamente.');
     }
   }
 
@@ -166,20 +182,21 @@ export function ProductsPanel() {
   return (
     <div>
       <PageHeader
+        badge="Catálogo"
         title="Produtos"
         description="Cadastro de marcas, categorias e produtos da loja"
       />
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-6 flex flex-wrap gap-2 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm">
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
               tab === t.id
-                ? 'bg-brand-900 text-white'
-                : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50'
+                ? 'bg-brand-900 text-white shadow-sm'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-brand-900'
             }`}
           >
             {t.label}
@@ -187,23 +204,17 @@ export function ProductsPanel() {
         ))}
       </div>
 
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
-
       {loading ? (
-        <div className="flex items-center justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          Carregando...
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
+          Carregando catálogo...
         </div>
       ) : (
         <>
           {tab === 'brands' && (
             <div className="grid gap-6 lg:grid-cols-2">
               <form onSubmit={handleCreateBrand} className={`${cardClass} p-5`}>
-                <h2 className="mb-4 font-semibold text-brand-900">Nova marca</h2>
+                <h2 className={cardHeaderClass}>Nova marca</h2>
                 <input
                   className={inputClass}
                   placeholder="Ex: Nike"
@@ -218,7 +229,7 @@ export function ProductsPanel() {
               </form>
               <div className={`${cardClass} overflow-hidden`}>
                 <table className={tableClass}>
-                  <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+                  <thead className={tableHeadClass}>
                     <tr>
                       <th className="px-4 py-3">Nome</th>
                       <th className="px-4 py-3 text-right">Ações</th>
@@ -231,7 +242,7 @@ export function ProductsPanel() {
                         <td className="px-4 py-3 text-right">
                           <button
                             type="button"
-                            onClick={() => handleDeleteBrand(b.id)}
+                            onClick={() => handleDeleteBrand(b.id, b.name)}
                             className={btnDangerClass}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -263,7 +274,7 @@ export function ProductsPanel() {
               </form>
               <div className={`${cardClass} overflow-hidden`}>
                 <table className={tableClass}>
-                  <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+                  <thead className={tableHeadClass}>
                     <tr>
                       <th className="px-4 py-3">Nome</th>
                       <th className="px-4 py-3 text-right">Ações</th>
@@ -276,7 +287,7 @@ export function ProductsPanel() {
                         <td className="px-4 py-3 text-right">
                           <button
                             type="button"
-                            onClick={() => handleDeleteCategory(c.id)}
+                            onClick={() => handleDeleteCategory(c.id, c.name)}
                             className={btnDangerClass}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -378,7 +389,7 @@ export function ProductsPanel() {
 
               <div className={`${cardClass} overflow-x-auto`}>
                 <table className={tableClass}>
-                  <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+                  <thead className={tableHeadClass}>
                     <tr>
                       <th className="px-4 py-3">Marca</th>
                       <th className="px-4 py-3">Categoria</th>
@@ -411,7 +422,7 @@ export function ProductsPanel() {
                         <td className="px-4 py-3 text-right">
                           <button
                             type="button"
-                            onClick={() => handleDeleteProduct(p.id)}
+                            onClick={() => handleDeleteProduct(p.id, p.model)}
                             className={btnDangerClass}
                           >
                             <Trash2 className="h-4 w-4" />

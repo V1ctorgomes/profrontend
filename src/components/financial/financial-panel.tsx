@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus, Trash2, TrendingDown, TrendingUp } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
@@ -11,8 +12,10 @@ import {
   btnPrimaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   selectClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 
 interface FinancialEntry {
@@ -33,8 +36,8 @@ interface Summary {
 }
 
 export function FinancialPanel() {
+  const { toast, fail, confirmDelete } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [entries, setEntries] = useState<FinancialEntry[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [form, setForm] = useState({
@@ -47,7 +50,6 @@ export function FinancialPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const [list, sum] = await Promise.all([
@@ -57,11 +59,11 @@ export function FinancialPanel() {
       setEntries(list);
       setSummary(sum);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar');
+      fail('Erro ao carregar', err, 'Erro ao carregar');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -87,39 +89,40 @@ export function FinancialPanel() {
         description: '',
         amount: '',
       }));
+      toast.success(
+        'Lançamento registrado',
+        form.type === 'income' ? 'Receita adicionada.' : 'Despesa adicionada.',
+      );
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao registrar');
+      fail('Erro ao registrar', err, 'Erro ao registrar');
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Excluir este lançamento?')) return;
+    if (!(await confirmDelete('Excluir lançamento?', 'Este lançamento será removido permanentemente.'))) return;
     try {
       await api(`/financial/${id}`, {
         method: 'DELETE',
         token: getClientToken(),
       });
+      toast.success('Lançamento excluído');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao excluir');
+      fail('Erro ao excluir', err, 'Erro ao excluir');
     }
   }
 
   return (
     <div>
       <PageHeader
+        badge="Financeiro"
         title="Financeiro"
         description="Lançamentos de receitas e despesas administrativas"
       />
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
       {loading ? (
-        <div className="flex justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -219,7 +222,7 @@ export function FinancialPanel() {
           </form>
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Tipo</th>

@@ -1,4 +1,5 @@
 import { AlertTriangle, ShoppingBag, Tag, TrendingUp } from 'lucide-react';
+import { PageHeader } from '@/components/layout/page-header';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { formatCurrency } from '@/lib/format';
 import type { UserDashboardMetrics } from '@/types/auth';
@@ -10,12 +11,11 @@ interface UserDashboardProps {
 export function UserDashboard({ metrics }: UserDashboardProps) {
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Painel do Dia</h1>
-        <p className="text-slate-500">
-          Acompanhe vendas, estoque e promoções ativas
-        </p>
-      </div>
+      <PageHeader
+        badge="Operação"
+        title="Painel do Dia"
+        description="Acompanhe vendas, estoque e promoções ativas em tempo real"
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Eye, Loader2, Plus, Search } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { formatCurrency } from '@/lib/format';
 import { getClientToken } from '@/lib/client-auth';
@@ -11,7 +12,9 @@ import {
   btnSecondaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 import type { Customer, CustomerDetail } from '@/types/customer';
 
@@ -22,8 +25,8 @@ function formatCpf(cpf: string) {
 }
 
 export function CustomersPanel() {
+  const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selected, setSelected] = useState<CustomerDetail | null>(null);
@@ -38,7 +41,6 @@ export function CustomersPanel() {
 
   const load = useCallback(async (q?: string) => {
     setLoading(true);
-    setError('');
     try {
       const query = q ? `?search=${encodeURIComponent(q)}` : '';
       const data = await api<Customer[]>(`/customers${query}`, {
@@ -46,11 +48,11 @@ export function CustomersPanel() {
       });
       setCustomers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar clientes');
+      fail('Erro ao carregar', err, 'Erro ao carregar clientes');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -70,10 +72,12 @@ export function CustomersPanel() {
           notes: form.notes || undefined,
         }),
       });
+      const name = form.name;
       setForm({ name: '', cpf: '', phone: '', birthDate: '', notes: '' });
+      toast.success('Cliente cadastrado', `"${name}" foi adicionado.`);
       await load(search);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao cadastrar cliente');
+      fail('Erro ao cadastrar', err, 'Erro ao cadastrar cliente');
     }
   }
 
@@ -85,7 +89,7 @@ export function CustomersPanel() {
       });
       setSelected(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar cliente');
+      fail('Erro ao carregar', err, 'Erro ao carregar cliente');
     } finally {
       setDetailLoading(false);
     }
@@ -94,15 +98,10 @@ export function CustomersPanel() {
   return (
     <div>
       <PageHeader
+        badge="Operações"
         title="Clientes"
         description="Cadastro e histórico de compras dos clientes"
       />
-
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
 
       <div className="grid gap-6 xl:grid-cols-3">
         <div className="space-y-6 xl:col-span-2">
@@ -129,13 +128,13 @@ export function CustomersPanel() {
 
           <div className={`${cardClass} overflow-x-auto`}>
             {loading ? (
-              <div className="flex items-center justify-center py-12 text-slate-500">
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              <div className={loadingClass}>
+                <Loader2 className="h-5 w-5 animate-spin" />
                 Carregando...
               </div>
             ) : (
               <table className={tableClass}>
-                <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className={tableHeadClass}>
                   <tr>
                     <th className="px-4 py-3">Nome</th>
                     <th className="px-4 py-3">CPF</th>

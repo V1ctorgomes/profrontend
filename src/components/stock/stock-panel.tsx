@@ -3,14 +3,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, Loader2, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import {
   btnPrimaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   selectClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 import type { Product } from '@/types/catalog';
 import type { StockMovement, StockOverviewItem } from '@/types/stock';
@@ -24,8 +27,8 @@ const MOVEMENT_TYPES = [
 ];
 
 export function StockPanel() {
+  const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [overview, setOverview] = useState<StockOverviewItem[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -46,7 +49,6 @@ export function StockPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const [o, m, p] = await Promise.all([
@@ -63,11 +65,11 @@ export function StockPanel() {
         productId: f.productId || p[0]?.id || '',
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar estoque');
+      fail('Erro ao carregar', err, 'Erro ao carregar estoque');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -86,9 +88,10 @@ export function StockPanel() {
         }),
       });
       setSizeForm((f) => ({ ...f, size: '', quantity: '0' }));
+      toast.success('Tamanho cadastrado', `Tamanho ${sizeForm.size} adicionado ao estoque.`);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao adicionar tamanho');
+      fail('Erro ao adicionar', err, 'Erro ao adicionar tamanho');
     }
   }
 
@@ -114,9 +117,10 @@ export function StockPanel() {
         quantity: '',
         reason: '',
       }));
+      toast.success('Movimentação registrada');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro na movimentação');
+      fail('Erro na movimentação', err, 'Erro na movimentação');
     }
   }
 
@@ -125,6 +129,7 @@ export function StockPanel() {
   return (
     <div>
       <PageHeader
+        badge="Operações"
         title="Estoque"
         description="Controle de quantidades por tamanho e movimentações"
         action={
@@ -137,15 +142,9 @@ export function StockPanel() {
         }
       />
 
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
-
       {loading ? (
-        <div className="flex items-center justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -269,7 +268,7 @@ export function StockPanel() {
 
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Marca</th>
                   <th className="px-4 py-3">Categoria</th>
@@ -325,7 +324,7 @@ export function StockPanel() {
               Últimas movimentações
             </h2>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Produto</th>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Loader2, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
@@ -10,8 +11,10 @@ import {
   btnPrimaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   selectClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 import type { Product } from '@/types/catalog';
 
@@ -35,8 +38,8 @@ interface Purchase {
 }
 
 export function PurchasesPanel() {
+  const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
@@ -51,7 +54,6 @@ export function PurchasesPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const [s, p, purchasesData] = await Promise.all([
@@ -68,11 +70,11 @@ export function PurchasesPanel() {
         productId: f.productId || p[0]?.id || '',
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar');
+      fail('Erro ao carregar', err, 'Erro ao carregar');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -86,10 +88,12 @@ export function PurchasesPanel() {
         token: getClientToken(),
         body: JSON.stringify({ name: supplierName }),
       });
+      const name = supplierName;
       setSupplierName('');
+      toast.success('Fornecedor criado', `"${name}" foi adicionado.`);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar fornecedor');
+      fail('Erro ao criar fornecedor', err, 'Erro ao criar fornecedor');
     }
   }
 
@@ -112,26 +116,23 @@ export function PurchasesPanel() {
         }),
       });
       setForm((f) => ({ ...f, size: '', quantity: '1', unitPrice: '' }));
+      toast.success('Compra registrada', 'Entrada no estoque realizada automaticamente.');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao registrar compra');
+      fail('Erro ao registrar compra', err, 'Erro ao registrar compra');
     }
   }
 
   return (
     <div>
       <PageHeader
+        badge="Operações"
         title="Compras"
         description="Registro de compras de fornecedores com entrada automática no estoque"
       />
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
       {loading ? (
-        <div className="flex justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -224,7 +225,7 @@ export function PurchasesPanel() {
           </div>
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Fornecedor</th>

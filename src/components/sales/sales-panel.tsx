@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Loader2, Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
@@ -12,8 +13,10 @@ import {
   btnSecondaryClass,
   cardClass,
   inputClass,
+  loadingClass,
   selectClass,
   tableClass,
+  tableHeadClass,
 } from '@/lib/styles';
 import type { Product } from '@/types/catalog';
 import type { Customer } from '@/types/customer';
@@ -58,9 +61,8 @@ const paymentMethods = [
 ];
 
 export function SalesPanel() {
+  const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -88,7 +90,6 @@ export function SalesPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const [prods, custs, promos, salesData] = await Promise.all([
@@ -106,11 +107,11 @@ export function SalesPanel() {
         productId: f.productId || prods[0]?.id || '',
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar');
+      fail('Erro ao carregar', err, 'Erro ao carregar');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fail]);
 
   useEffect(() => {
     load();
@@ -122,10 +123,12 @@ export function SalesPanel() {
     const stock = product.stockItems?.find((s) => s.size === addForm.size);
     const qty = Number(addForm.quantity);
     if (!stock || qty <= 0 || qty > stock.quantity) {
-      setError(`Estoque insuficiente para tamanho ${addForm.size}`);
+      toast.error(
+        'Estoque insuficiente',
+        `Estoque insuficiente para tamanho ${addForm.size}`,
+      );
       return;
     }
-    setError('');
     const name = `${product.brand.name} — ${product.model}`;
     setCart((prev) => {
       const idx = prev.findIndex(
@@ -136,7 +139,7 @@ export function SalesPanel() {
         const next = [...prev];
         const newQty = next[idx].quantity + qty;
         if (newQty > stock.quantity) {
-          setError('Quantidade excede estoque');
+          toast.error('Estoque insuficiente', 'Quantidade excede estoque');
           return prev;
         }
         next[idx] = { ...next[idx], quantity: newQty };
@@ -163,19 +166,17 @@ export function SalesPanel() {
   async function handleSale(e: React.FormEvent) {
     e.preventDefault();
     if (cart.length === 0) {
-      setError('Adicione itens ao carrinho');
+      toast.error('Carrinho vazio', 'Adicione itens ao carrinho');
       return;
     }
     const parsedPayments = payments
       .filter((p) => p.amount)
       .map((p) => ({ method: p.method, amount: Number(p.amount) }));
     if (parsedPayments.length === 0) {
-      setError('Informe ao menos um pagamento');
+      toast.error('Pagamento obrigatório', 'Informe ao menos um pagamento');
       return;
     }
     setSubmitting(true);
-    setError('');
-    setSuccess('');
     try {
       await api('/sales', {
         method: 'POST',
@@ -195,10 +196,10 @@ export function SalesPanel() {
       setCart([]);
       setPayments([{ method: 'CASH', amount: '' }]);
       setPromotionId('');
-      setSuccess('Venda registrada com sucesso!');
+      toast.success('Venda registrada', 'Venda registrada com sucesso!');
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao finalizar venda');
+      fail('Erro ao finalizar venda', err, 'Erro ao finalizar venda');
     } finally {
       setSubmitting(false);
     }
@@ -207,22 +208,13 @@ export function SalesPanel() {
   return (
     <div>
       <PageHeader
+        badge="PDV"
         title="Vendas (PDV)"
         description="Ponto de venda com carrinho, promoções e múltiplos pagamentos"
       />
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
-      {success && (
-        <p className="mb-4 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
-          {success}
-        </p>
-      )}
       {loading ? (
-        <div className="flex justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -416,7 +408,7 @@ export function SalesPanel() {
               Vendas recentes
             </h2>
             <table className={tableClass}>
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Data</th>
                   <th className="px-4 py-3">Cliente</th>

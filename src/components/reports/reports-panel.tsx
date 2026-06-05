@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { BarChart3, Loader2 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/page-header';
+import { usePanelFeedback } from '@/hooks/use-panel-feedback';
 import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
-import { cardClass, inputClass, tableClass } from '@/lib/styles';
+import { cardClass, inputClass, loadingClass, tableClass, tableHeadClass } from '@/lib/styles';
 
 interface SalesReport {
   summary: {
@@ -61,8 +62,8 @@ interface FinancialReport {
 }
 
 export function ReportsPanel() {
+  const { fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [sales, setSales] = useState<SalesReport | null>(null);
@@ -71,7 +72,6 @@ export function ReportsPanel() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError('');
     try {
       const token = getClientToken();
       const params = new URLSearchParams();
@@ -87,11 +87,11 @@ export function ReportsPanel() {
       setStock(stockData);
       setFinancial(finData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar');
+      fail('Erro ao carregar', err, 'Erro ao carregar');
     } finally {
       setLoading(false);
     }
-  }, [from, to]);
+  }, [from, to, fail]);
 
   useEffect(() => {
     load();
@@ -100,14 +100,10 @@ export function ReportsPanel() {
   return (
     <div>
       <PageHeader
+        badge="Relatórios"
         title="Relatórios"
         description="Visão consolidada de vendas, estoque e financeiro"
       />
-      {error && (
-        <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
       <div className={`${cardClass} mb-6 flex flex-wrap items-end gap-3 p-5`}>
         <div>
           <label className="mb-1 block text-xs text-slate-500">De</label>
@@ -136,8 +132,8 @@ export function ReportsPanel() {
         </button>
       </div>
       {loading ? (
-        <div className="flex justify-center py-16 text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        <div className={loadingClass}>
+          <Loader2 className="h-5 w-5 animate-spin" />
           Carregando...
         </div>
       ) : (
@@ -175,7 +171,7 @@ export function ReportsPanel() {
               {sales.topProducts.length > 0 && (
                 <div className="overflow-x-auto">
                   <table className={tableClass}>
-                    <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+                    <thead className={tableHeadClass}>
                       <tr>
                         <th className="px-4 py-3">Produto</th>
                         <th className="px-4 py-3">Qtd vendida</th>
@@ -207,7 +203,7 @@ export function ReportsPanel() {
                 </span>
               </div>
               <table className={tableClass}>
-                <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase text-slate-500">
+                <thead className={tableHeadClass}>
                   <tr>
                     <th className="px-4 py-3">Produto</th>
                     <th className="px-4 py-3">Categoria</th>
