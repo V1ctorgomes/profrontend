@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Loader2, Lock, Mail, ShieldCheck, Shirt } from 'lucide-react';
+import { ArrowRight, Loader2, Lock, Mail, ShieldCheck } from 'lucide-react';
+import { ProgrifesLogo } from '@/components/brand/progrifes-logo';
 import { api } from '@/lib/api';
 import type { LoginResponse } from '@/types/auth';
 import { AUTH_COOKIE, USER_COOKIE } from '@/lib/constants';
@@ -51,13 +52,8 @@ export function LoginForm() {
   return (
     <div className="relative flex w-full flex-col justify-center bg-gradient-to-br from-white via-brand-canvas to-brand-50/60 px-8 py-12 sm:px-16 md:px-24 lg:w-1/2 lg:px-32">
       <div className="mx-auto flex w-full max-w-[420px] flex-col">
-        <div className="mb-10 flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white">
-            <Shirt className="h-6 w-6" />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-brand-950 sm:text-2xl">
-            PROGRIFES
-          </span>
+        <div className="mb-10">
+          <ProgrifesLogo size="xl" priority />
         </div>
 
         <div className="mb-6 flex flex-col space-y-2">

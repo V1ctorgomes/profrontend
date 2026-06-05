@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   title: 'Progrifes ERP | Gestão de Loja de Roupas',
   description:
     'Sistema ERP completo para gestão de estoque, vendas, clientes e financeiro.',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
