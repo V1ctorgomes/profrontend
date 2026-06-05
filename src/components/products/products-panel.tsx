@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { FormModal } from '@/components/ui/form-modal';
@@ -24,7 +24,12 @@ import {
 import { formatCurrency } from '@/lib/format';
 import type { Brand, Category, Product } from '@/types/catalog';
 
-type Tab = 'products' | 'brands' | 'categories';
+type Tab = 'products' | 'brands' | 'categories' | 'suppliers';
+
+interface Supplier {
+  id: string;
+  name: string;
+}
 
 const emptyProductForm = {
   brandId: '',
@@ -40,26 +45,31 @@ export function ProductsPanel() {
   const [tab, setTab] = useState<Tab>('products');
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   const [brandName, setBrandName] = useState('');
   const [categoryName, setCategoryName] = useState('');
+  const [supplierName, setSupplierName] = useState('');
   const [productForm, setProductForm] = useState(emptyProductForm);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const token = getClientToken();
-      const [b, c, p] = await Promise.all([
+      const [b, c, p, s] = await Promise.all([
         api<Brand[]>('/brands', { token }),
         api<Category[]>('/categories', { token }),
         api<Product[]>('/products', { token }),
+        api<Supplier[]>('/suppliers', { token }),
       ]);
       setBrands(b);
       setCategories(c);
       setProducts(p);
+      setSuppliers(s);
       setProductForm((f) => ({
         ...f,
         brandId: f.brandId || b[0]?.id || '',
@@ -77,6 +87,7 @@ export function ProductsPanel() {
   }, [load]);
 
   function openModal() {
+    setEditingSupplier(null);
     if (tab === 'products') {
       setProductForm((f) => ({
         ...emptyProductForm,
@@ -85,14 +96,24 @@ export function ProductsPanel() {
       }));
     } else if (tab === 'brands') {
       setBrandName('');
-    } else {
+    } else if (tab === 'categories') {
       setCategoryName('');
+    } else {
+      setSupplierName('');
     }
+    setModalOpen(true);
+  }
+
+  function openEditSupplierModal(supplier: Supplier) {
+    setEditingSupplier(supplier);
+    setSupplierName(supplier.name);
     setModalOpen(true);
   }
 
   function closeModal() {
     setModalOpen(false);
+    setEditingSupplier(null);
+    setSupplierName('');
   }
 
   async function handleCreateBrand(e: React.FormEvent) {
@@ -126,6 +147,35 @@ export function ProductsPanel() {
       await load();
     } catch (err) {
       fail('Erro ao criar categoria', err, 'Tente novamente.');
+    }
+  }
+
+  async function handleSaveSupplier(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      if (editingSupplier) {
+        await api(`/suppliers/${editingSupplier.id}`, {
+          method: 'PATCH',
+          token: getClientToken(),
+          body: JSON.stringify({ name: supplierName }),
+        });
+        toast.success('Fornecedor atualizado', `"${supplierName}" foi salvo.`);
+      } else {
+        await api('/suppliers', {
+          method: 'POST',
+          token: getClientToken(),
+          body: JSON.stringify({ name: supplierName }),
+        });
+        toast.success('Fornecedor criado', `"${supplierName}" foi adicionado.`);
+      }
+      closeModal();
+      await load();
+    } catch (err) {
+      fail(
+        editingSupplier ? 'Erro ao atualizar fornecedor' : 'Erro ao criar fornecedor',
+        err,
+        editingSupplier ? 'Erro ao atualizar fornecedor' : 'Erro ao criar fornecedor',
+      );
     }
   }
 
@@ -178,6 +228,27 @@ export function ProductsPanel() {
     }
   }
 
+  async function handleDeleteSupplier(id: string, name: string) {
+    if (
+      !(await confirmDelete(
+        'Excluir fornecedor?',
+        `"${name}" será removido. Fornecedores com compras vinculadas não podem ser excluídos.`,
+      ))
+    ) {
+      return;
+    }
+    try {
+      await api(`/suppliers/${id}`, {
+        method: 'DELETE',
+        token: getClientToken(),
+      });
+      toast.success('Fornecedor excluído');
+      await load();
+    } catch (err) {
+      fail('Erro ao excluir fornecedor', err, 'Erro ao excluir fornecedor');
+    }
+  }
+
   async function handleDeleteProduct(id: string, model: string) {
     if (!(await confirmDelete('Excluir produto?', `"${model}" será removido do catálogo.`))) return;
     try {
@@ -193,25 +264,28 @@ export function ProductsPanel() {
     { id: 'products', label: 'Produtos' },
     { id: 'brands', label: 'Marcas' },
     { id: 'categories', label: 'Categorias' },
+    { id: 'suppliers', label: 'Fornecedores' },
   ];
 
   const addLabels: Record<Tab, string> = {
     products: 'Novo produto',
     brands: 'Nova marca',
     categories: 'Nova categoria',
+    suppliers: 'Novo fornecedor',
   };
 
   const modalTitles: Record<Tab, string> = {
     products: 'Novo produto',
     brands: 'Nova marca',
     categories: 'Nova categoria',
+    suppliers: 'Novo fornecedor',
   };
 
   return (
     <>
       <PageHeader
         title="Produtos"
-        description="Cadastro de marcas, categorias e produtos da loja"
+        description="Cadastro de marcas, categorias, produtos e fornecedores"
         action={
           !loading ? (
             <button type="button" onClick={openModal} className={btnPrimaryClass}>
@@ -295,6 +369,53 @@ export function ProductsPanel() {
                         </td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {tab === 'suppliers' && (
+              <div className={`${cardClass} overflow-hidden`}>
+                <table className={tableClass}>
+                  <thead className={tableHeadClass}>
+                    <tr>
+                      <th className="px-4 py-3">Nome</th>
+                      <th className="px-4 py-3 text-right">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {suppliers.map((s) => (
+                      <tr key={s.id} className="border-b border-slate-50">
+                        <td className="px-4 py-3 font-medium">{s.name}</td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => openEditSupplierModal(s)}
+                              className={btnSecondaryClass}
+                              title="Editar fornecedor"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSupplier(s.id, s.name)}
+                              className={btnDangerClass}
+                              title="Excluir fornecedor"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {suppliers.length === 0 && (
+                      <tr>
+                        <td colSpan={2} className="px-4 py-8 text-center text-slate-500">
+                          Nenhum fornecedor cadastrado
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -399,6 +520,57 @@ export function ProductsPanel() {
             <button type="submit" className={btnPrimaryClass}>
               <Plus className="h-4 w-4" />
               Adicionar categoria
+            </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={modalOpen && tab === 'suppliers' && !editingSupplier}
+        onClose={closeModal}
+        title={modalTitles.suppliers}
+        description="Cadastre um fornecedor para registrar compras."
+      >
+        <form onSubmit={handleSaveSupplier} className="space-y-4">
+          <input
+            className={inputClass}
+            placeholder="Nome do fornecedor"
+            value={supplierName}
+            onChange={(e) => setSupplierName(e.target.value)}
+            required
+          />
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={closeModal} className={btnSecondaryClass}>
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              <Plus className="h-4 w-4" />
+              Adicionar fornecedor
+            </button>
+          </div>
+        </form>
+      </FormModal>
+
+      <FormModal
+        open={!!editingSupplier}
+        onClose={closeModal}
+        title="Editar fornecedor"
+        description="Altere o nome do fornecedor."
+      >
+        <form onSubmit={handleSaveSupplier} className="space-y-4">
+          <input
+            className={inputClass}
+            placeholder="Nome do fornecedor"
+            value={supplierName}
+            onChange={(e) => setSupplierName(e.target.value)}
+            required
+          />
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={closeModal} className={btnSecondaryClass}>
+              Cancelar
+            </button>
+            <button type="submit" className={btnPrimaryClass}>
+              Salvar alterações
             </button>
           </div>
         </form>

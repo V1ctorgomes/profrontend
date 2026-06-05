@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { PageContent } from '@/components/layout/page-content';
 import { PageHeader } from '@/components/layout/page-header';
 import { FormModal } from '@/components/ui/form-modal';
@@ -10,7 +10,6 @@ import { api } from '@/lib/api';
 import { getClientToken } from '@/lib/client-auth';
 import { formatCurrency } from '@/lib/format';
 import {
-  btnDangerClass,
   btnPrimaryClass,
   btnSecondaryClass,
   cardClass,
@@ -19,12 +18,8 @@ import {
   selectClass,
   tableClass,
   tableHeadClass,
-  tabButtonActiveClass,
-  tabButtonInactiveClass,
 } from '@/lib/styles';
 import type { Product } from '@/types/catalog';
-
-type Tab = 'purchases' | 'suppliers';
 
 interface Supplier {
   id: string;
@@ -54,16 +49,12 @@ const emptyPurchaseForm = {
 };
 
 export function PurchasesPanel() {
-  const { toast, fail, confirmDelete } = usePanelFeedback();
-  const [tab, setTab] = useState<Tab>('purchases');
+  const { toast, fail } = usePanelFeedback();
   const [loading, setLoading] = useState(true);
-  const [supplierModalOpen, setSupplierModalOpen] = useState(false);
-  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [purchases, setPurchases] = useState<Purchase[]>([]);
-  const [supplierName, setSupplierName] = useState('');
   const [form, setForm] = useState(emptyPurchaseForm);
 
   const load = useCallback(async () => {
@@ -94,24 +85,6 @@ export function PurchasesPanel() {
     load();
   }, [load]);
 
-  function openCreateSupplierModal() {
-    setEditingSupplier(null);
-    setSupplierName('');
-    setSupplierModalOpen(true);
-  }
-
-  function openEditSupplierModal(supplier: Supplier) {
-    setEditingSupplier(supplier);
-    setSupplierName(supplier.name);
-    setSupplierModalOpen(true);
-  }
-
-  function closeSupplierModal() {
-    setSupplierModalOpen(false);
-    setEditingSupplier(null);
-    setSupplierName('');
-  }
-
   function openPurchaseModal() {
     setForm((f) => ({
       ...emptyPurchaseForm,
@@ -119,56 +92,6 @@ export function PurchasesPanel() {
       productId: f.productId || products[0]?.id || '',
     }));
     setPurchaseModalOpen(true);
-  }
-
-  async function handleSaveSupplier(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      if (editingSupplier) {
-        await api(`/suppliers/${editingSupplier.id}`, {
-          method: 'PATCH',
-          token: getClientToken(),
-          body: JSON.stringify({ name: supplierName }),
-        });
-        toast.success('Fornecedor atualizado', `"${supplierName}" foi salvo.`);
-      } else {
-        await api('/suppliers', {
-          method: 'POST',
-          token: getClientToken(),
-          body: JSON.stringify({ name: supplierName }),
-        });
-        toast.success('Fornecedor criado', `"${supplierName}" foi adicionado.`);
-      }
-      closeSupplierModal();
-      await load();
-    } catch (err) {
-      fail(
-        editingSupplier ? 'Erro ao atualizar fornecedor' : 'Erro ao criar fornecedor',
-        err,
-        editingSupplier ? 'Erro ao atualizar fornecedor' : 'Erro ao criar fornecedor',
-      );
-    }
-  }
-
-  async function handleDeleteSupplier(id: string, name: string) {
-    if (
-      !(await confirmDelete(
-        'Excluir fornecedor?',
-        `"${name}" será removido. Fornecedores com compras vinculadas não podem ser excluídos.`,
-      ))
-    ) {
-      return;
-    }
-    try {
-      await api(`/suppliers/${id}`, {
-        method: 'DELETE',
-        token: getClientToken(),
-      });
-      toast.success('Fornecedor excluído');
-      await load();
-    } catch (err) {
-      fail('Erro ao excluir fornecedor', err, 'Erro ao excluir fornecedor');
-    }
   }
 
   async function handleCreatePurchase(e: React.FormEvent) {
@@ -198,56 +121,25 @@ export function PurchasesPanel() {
     }
   }
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'purchases', label: 'Histórico de compras' },
-    { id: 'suppliers', label: 'Fornecedores' },
-  ];
-
   return (
     <>
       <PageHeader
         title="Compras"
         description="Registro de compras de fornecedores com entrada automática no estoque"
         action={
-          <div className="flex flex-wrap gap-2">
-            {tab === 'suppliers' ? (
-              <button
-                type="button"
-                onClick={openCreateSupplierModal}
-                className={btnPrimaryClass}
-              >
-                <Plus className="h-4 w-4" />
-                Novo fornecedor
-              </button>
-            ) : (
-              <button type="button" onClick={openPurchaseModal} className={btnPrimaryClass}>
-                <Plus className="h-4 w-4" />
-                Nova compra
-              </button>
-            )}
-          </div>
+          <button type="button" onClick={openPurchaseModal} className={btnPrimaryClass}>
+            <Plus className="h-4 w-4" />
+            Nova compra
+          </button>
         }
       />
       <PageContent>
-        <div className="mb-6 flex flex-wrap gap-2">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={tab === t.id ? tabButtonActiveClass : tabButtonInactiveClass}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
         {loading ? (
           <div className={loadingClass}>
             <Loader2 className="h-5 w-5 animate-spin" />
             Carregando...
           </div>
-        ) : tab === 'purchases' ? (
+        ) : (
           <div className={`${cardClass} overflow-x-auto`}>
             <table className={tableClass}>
               <thead className={tableHeadClass}>
@@ -290,82 +182,8 @@ export function PurchasesPanel() {
               </tbody>
             </table>
           </div>
-        ) : (
-          <div className={`${cardClass} overflow-x-auto`}>
-            <table className={tableClass}>
-              <thead className={tableHeadClass}>
-                <tr>
-                  <th className="px-4 py-3">Nome</th>
-                  <th className="px-4 py-3 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {suppliers.map((s) => (
-                  <tr key={s.id} className="border-b border-slate-50">
-                    <td className="px-4 py-3 font-medium">{s.name}</td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => openEditSupplierModal(s)}
-                          className={btnSecondaryClass}
-                          title="Editar fornecedor"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteSupplier(s.id, s.name)}
-                          className={btnDangerClass}
-                          title="Excluir fornecedor"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {suppliers.length === 0 && (
-                  <tr>
-                    <td colSpan={2} className="px-4 py-8 text-center text-slate-500">
-                      Nenhum fornecedor cadastrado
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
         )}
       </PageContent>
-
-      <FormModal
-        open={supplierModalOpen}
-        onClose={closeSupplierModal}
-        title={editingSupplier ? 'Editar fornecedor' : 'Novo fornecedor'}
-        description={
-          editingSupplier
-            ? 'Altere o nome do fornecedor.'
-            : 'Cadastre um fornecedor para registrar compras.'
-        }
-      >
-        <form onSubmit={handleSaveSupplier} className="space-y-4">
-          <input
-            className={inputClass}
-            placeholder="Nome do fornecedor"
-            value={supplierName}
-            onChange={(e) => setSupplierName(e.target.value)}
-            required
-          />
-          <div className="flex justify-end gap-3">
-            <button type="button" onClick={closeSupplierModal} className={btnSecondaryClass}>
-              Cancelar
-            </button>
-            <button type="submit" className={btnPrimaryClass}>
-              {editingSupplier ? 'Salvar alterações' : 'Adicionar'}
-            </button>
-          </div>
-        </form>
-      </FormModal>
 
       <FormModal
         open={purchaseModalOpen}
